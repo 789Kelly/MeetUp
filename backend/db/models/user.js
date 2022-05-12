@@ -1,12 +1,15 @@
 "use strict";
-const { Model, Validator } = require("sequelize");
+const { Model } = require("sequelize");
 const bcrypt = require("bcryptjs");
-const { mapValueFieldNames } = require("sequelize/types/utils");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     toSafeObject() {
       const { id, username, email } = this;
       return { id, username, email };
+    }
+    validatePassword(password) {
+      return bcrypt.compareSync(password, this.hashedPassword.toString());
     }
     static getCurrentUserById(id) {
       return User.scope("currentUser").findByPk(id);
@@ -69,9 +72,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           len: [60, 60],
-          validatePassword(password) {
-            return bcrypt.compareSync(password, this.hashedPassword.toString());
-          },
         },
       },
     },
