@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Image.belongsTo(models.Group, { foreignKey: "imageableId" });
-      Image.belongsTo(models.Event, { foreignKey: "imageableId" });
+      Image.belongsTo(models.Group, { foreignKey: "groupId" });
+      Image.belongsTo(models.Event, { foreignKey: "eventId" });
     }
   }
   Image.init(
     {
-      imageableId: DataTypes.INTEGER,
-      imageableType: DataTypes.STRING,
+      groupId: DataTypes.INTEGER,
+      eventId: DataTypes.INTEGER,
       url: DataTypes.STRING,
     },
     {

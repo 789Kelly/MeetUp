@@ -8,14 +8,17 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      imageableId: {
+      groupId: {
         type: Sequelize.INTEGER,
         references: {
           model: "Groups",
         },
       },
-      imageableType: {
-        type: Sequelize.STRING,
+      eventId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Events",
+        },
       },
       url: {
         type: Sequelize.STRING,
