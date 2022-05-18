@@ -40,9 +40,11 @@ module.exports = {
         type: Sequelize.DECIMAL,
       },
       startDate: {
+        allowNull: false,
         type: Sequelize.DATE,
       },
       endDate: {
+        allowNull: false,
         type: Sequelize.DATE,
       },
       createdAt: {

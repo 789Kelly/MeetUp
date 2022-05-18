@@ -16,17 +16,49 @@ module.exports = (sequelize, DataTypes) => {
   }
   Group.init(
     {
-      name: DataTypes.STRING,
-      about: DataTypes.STRING,
-      type: DataTypes.STRING,
-      private: DataTypes.BOOLEAN,
-      city: {
+      name: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        unique: true,
+        validate: {
+          len: [0, 30],
+        },
+      },
+      about: {
+        allowNull: false,
         type: DataTypes.STRING,
         validate: {
+          len: [0, 256],
+        },
+      },
+      type: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 30],
+        },
+      },
+      private: {
+        allowNull: false,
+        defaultValue: true,
+        type: DataTypes.BOOLEAN,
+      },
+      city: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 30],
           isAlpha: true,
         },
       },
-      state: DataTypes.STRING,
+      state: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 30],
+          isAlpha: true,
+        },
+      },
     },
     {
       sequelize,

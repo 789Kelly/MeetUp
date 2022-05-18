@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
   Attendance.init(
     {
       status: {
-        type: DataTypes.STRING,
         allowNull: false,
+        type: DataTypes.STRING,
         validate: {
           len: [0, 30],
         },

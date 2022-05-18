@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
   Membership.init(
     {
       status: {
-        type: DataTypes.STRING,
         allowNull: false,
+        type: DataTypes.STRING,
         validate: {
           len: [0, 30],
         },

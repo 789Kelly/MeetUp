@@ -18,13 +18,43 @@ module.exports = (sequelize, DataTypes) => {
     {
       groupId: DataTypes.INTEGER,
       venueId: DataTypes.INTEGER,
-      name: DataTypes.STRING,
-      description: DataTypes.STRING,
-      type: DataTypes.STRING,
-      capacity: DataTypes.INTEGER,
-      price: DataTypes.DECIMAL,
-      startDate: DataTypes.DATE,
-      endDate: DataTypes.DATE,
+      name: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 30],
+        },
+      },
+      description: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 256],
+        },
+      },
+      type: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 30],
+        },
+      },
+      capacity: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
+      price: {
+        allowNull: false,
+        type: DataTypes.DECIMAL,
+      },
+      startDate: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      endDate: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
     },
     {
       sequelize,
