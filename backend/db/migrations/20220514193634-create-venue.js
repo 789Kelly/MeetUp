@@ -9,13 +9,16 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       address: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       city: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       state: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       lat: {
         type: Sequelize.DECIMAL,
@@ -24,20 +27,20 @@ module.exports = {
         type: Sequelize.DECIMAL,
       },
       groupId: {
-        type: Sequelize.INTEGER,
         references: {
           model: "Groups",
         },
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        type: Sequelize.DATE,
       },
     });
   },

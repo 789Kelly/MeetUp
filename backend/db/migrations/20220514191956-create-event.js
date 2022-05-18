@@ -9,27 +9,31 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       groupId: {
-        type: Sequelize.INTEGER,
         references: {
           model: "Groups",
         },
+        type: Sequelize.INTEGER,
       },
       venueId: {
-        type: Sequelize.INTEGER,
         references: {
           model: "Venues",
         },
+        type: Sequelize.INTEGER,
       },
       name: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       description: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(256),
       },
       type: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       capacity: {
+        allowNull: false,
         type: Sequelize.INTEGER,
       },
       price: {
@@ -43,13 +47,13 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        type: Sequelize.DATE,
       },
     });
   },

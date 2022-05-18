@@ -20,7 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       about: DataTypes.STRING,
       type: DataTypes.STRING,
       private: DataTypes.BOOLEAN,
-      city: DataTypes.STRING,
+      city: {
+        type: DataTypes.STRING,
+        validate: {
+          isAlpha: true,
+        },
+      },
       state: DataTypes.STRING,
     },
     {

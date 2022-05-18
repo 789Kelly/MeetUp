@@ -9,32 +9,40 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       name: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
+        unique: true,
       },
       about: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(256),
       },
       type: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       private: {
+        allowNull: false,
+        defaultValue: true,
         type: Sequelize.BOOLEAN,
       },
       city: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       state: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.STRING(30),
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        type: Sequelize.DATE,
       },
     });
   },
