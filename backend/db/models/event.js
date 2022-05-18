@@ -16,8 +16,14 @@ module.exports = (sequelize, DataTypes) => {
   }
   Event.init(
     {
-      groupId: DataTypes.INTEGER,
-      venueId: DataTypes.INTEGER,
+      groupId: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
+      venueId: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
       name: {
         allowNull: false,
         type: DataTypes.STRING,

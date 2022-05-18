@@ -20,8 +20,14 @@ module.exports = (sequelize, DataTypes) => {
           len: [0, 30],
         },
       },
-      userId: DataTypes.INTEGER,
-      groupId: DataTypes.INTEGER,
+      userId: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
+      groupId: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
     },
     {
       sequelize,

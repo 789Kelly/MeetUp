@@ -47,16 +47,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
           isAlpha: true,
+          len: [0, 30],
         },
       },
       state: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
           isAlpha: true,
+          len: [0, 30],
         },
       },
     },

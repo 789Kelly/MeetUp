@@ -14,9 +14,29 @@ module.exports = (sequelize, DataTypes) => {
   }
   Venue.init(
     {
-      address: DataTypes.STRING,
-      city: DataTypes.STRING,
-      state: DataTypes.STRING,
+      address: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 30],
+        },
+      },
+      city: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          isAlpha: true,
+          len: [0, 30],
+        },
+      },
+      state: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          isAlpha: true,
+          len: [0, 30],
+        },
+      },
       lat: DataTypes.DECIMAL,
       lng: DataTypes.DECIMAL,
       groupId: DataTypes.INTEGER,

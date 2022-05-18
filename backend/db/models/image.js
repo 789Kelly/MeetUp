@@ -17,7 +17,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       groupId: DataTypes.INTEGER,
       eventId: DataTypes.INTEGER,
-      url: DataTypes.STRING,
+      url: {
+        allowNull: false,
+        type: DataTypes.STRING,
+        validate: {
+          len: [0, 30],
+        },
+      },
     },
     {
       sequelize,
