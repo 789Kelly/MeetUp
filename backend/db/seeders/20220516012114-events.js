@@ -11,8 +11,8 @@ const events = [
     type: "test",
     capacity: 100,
     price: 1.0,
-    startDate: 2000 - 01 - 01,
-    endDate: 2000 - 01 - 02,
+    startDate: "2000-01-01",
+    endDate: "2000-01-02",
   },
   {
     groupId: 2,
@@ -22,8 +22,8 @@ const events = [
     type: "test",
     capacity: 200,
     price: 2.0,
-    startDate: 2000 - 01 - 03,
-    endDate: 2000 - 01 - 04,
+    startDate: "2000-01-03",
+    endDate: "2000-01-04",
   },
   {
     groupId: 3,
@@ -33,8 +33,8 @@ const events = [
     type: "test",
     capacity: 300,
     price: 3.0,
-    startDate: 2000 - 01 - 05,
-    endDate: 2000 - 01 - 06,
+    startDate: "2000-01-05",
+    endDate: "2000-01-06",
   },
   {
     groupId: 4,
@@ -44,8 +44,8 @@ const events = [
     type: "test",
     capacity: 400,
     price: 4.0,
-    startDate: 2000 - 01 - 07,
-    endDate: 2000 - 01 - 08,
+    startDate: "2000-01-07",
+    endDate: "2000-01-08",
   },
   {
     groupId: 5,
@@ -55,8 +55,8 @@ const events = [
     type: "test",
     capacity: 500,
     price: 5.0,
-    startDate: 2000 - 01 - 09,
-    endDate: 2000 - 01 - 10,
+    startDate: "2000-01-09",
+    endDate: "2000-01-10",
   },
   {
     groupId: 6,
@@ -66,8 +66,8 @@ const events = [
     type: "test",
     capacity: 600,
     price: 6.0,
-    startDate: 2000 - 01 - 11,
-    endDate: 2000 - 01 - 12,
+    startDate: "2000-01-09",
+    endDate: "2000-01-10",
   },
   {
     groupId: 7,
@@ -77,8 +77,8 @@ const events = [
     type: "test",
     capacity: 700,
     price: 7.0,
-    startDate: 2000 - 01 - 14,
-    endDate: 2000 - 01 - 15,
+    startDate: "2000-01-09",
+    endDate: "2000-01-10",
   },
   {
     groupId: 8,
@@ -88,8 +88,8 @@ const events = [
     type: "test",
     capacity: 800,
     price: 8.0,
-    startDate: 2000 - 01 - 16,
-    endDate: 2000 - 01 - 17,
+    startDate: "2000-01-09",
+    endDate: "2000-01-10",
   },
   {
     groupId: 9,
@@ -99,8 +99,8 @@ const events = [
     type: "test",
     capacity: 900,
     price: 9.0,
-    startDate: 2000 - 01 - 18,
-    endDate: 2000 - 01 - 19,
+    startDate: "2000-01-09",
+    endDate: "2000-01-10",
   },
 ];
 

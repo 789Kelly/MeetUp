@@ -1,8 +1,8 @@
 "use strict";
 
-const { Venue } = require("../models");
+const { Image } = require("../models");
 
-const venues = [
+const images = [
   {
     groupId: 1,
     eventId: null,
