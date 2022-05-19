@@ -47,7 +47,7 @@ const groups = [
     name: "Group Six",
     about: "test",
     type: "test",
-    private: true,
+    private: false,
     city: "Xian",
     state: "China",
   },
@@ -63,7 +63,7 @@ const groups = [
     name: "Group Eight",
     about: "test",
     type: "test",
-    private: true,
+    private: false,
     city: "Ankara",
     state: "Turkey",
   },
@@ -79,23 +79,12 @@ const groups = [
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-     */
+    await Group.bulkCreate(groups, {
+      validate: true,
+    });
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await Group.bulkDelete(groups, {});
   },
 };

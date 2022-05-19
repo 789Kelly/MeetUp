@@ -34,12 +34,12 @@ const attendances = [
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await Membership.bulkCreate(memberships, {
+    await Attendance.bulkCreate(attendances, {
       validate: true,
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await Membership.bulkDelete(memberships, {});
+    await Attendance.bulkDelete(attendances, {});
   },
 };
