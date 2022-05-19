@@ -85,6 +85,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await Group.bulkDelete(groups, {});
+    await queryInterface.bulkDelete("Groups", null, {});
   },
 };
