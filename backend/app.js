@@ -24,7 +24,7 @@ const venueRouter = require("./routes/api/venues");
 const imageRouter = require("./routes/api/images");
 
 app.use("/groups", groupRouter);
-// app.use("/events", eventRouter);
+app.use("/events", eventRouter);
 // app.use("/venues", venueRouter);
 // app.use("/images", imageRouter);
 
