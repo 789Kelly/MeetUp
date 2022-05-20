@@ -18,6 +18,16 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
 
+const groupRouter = require("./routes/api/groups");
+const eventRouter = require("./routes/api/events");
+const venueRouter = require("./routes/api/venues");
+const imageRouter = require("./routes/api/images");
+
+app.use("/groups", groupRouter);
+// app.use("/events", eventRouter);
+// app.use("/venues", venueRouter);
+// app.use("/images", imageRouter);
+
 if (!isProduction) {
   app.use(cors());
 }
