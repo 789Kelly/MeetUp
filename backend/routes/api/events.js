@@ -4,7 +4,7 @@ const router = express.Router();
 const { Event } = require("../../db/models");
 
 router.get("/", async (req, res) => {
-  const eveents = await Event.findAll();
+  const events = await Event.findAll();
   res.json(events);
 });
 
