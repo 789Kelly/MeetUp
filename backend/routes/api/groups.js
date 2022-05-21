@@ -1,7 +1,36 @@
 const express = require("express");
+
 const router = express.Router();
 
-const { Group } = require("../../db/models");
+const { Group, User } = require("../../db/models");
+
+router.get("/:groupId/members", async (req, res) => {
+  const { groupId } = req.params;
+
+  const group = await Group.findByPk(groupId, {
+    include: [
+      {
+        model: User,
+      },
+    ],
+  });
+
+  return res.json(group.Users);
+});
+
+// router.get("/:groupId/events", async (req, res) => {
+//   const { groupId } = req.params;
+
+//   const group = await Group.findByPk(groupId, {
+//     include: [
+//       {
+//         model: Event,
+//       },
+//     ],
+//   });
+
+//   return res.json(group);
+// });
 
 router.get("/:id", async (req, res) => {
   const groupById = await Group.findByPk(req.params.id);

@@ -35,4 +35,18 @@ router.post("/signup", validateSignup, async (req, res) => {
   });
 });
 
+// router.get("users/current/groups", async (req, res) => {
+//   const { userId } = req.params;
+
+//   const user = await User.findByPk(userId, {
+//     include: [
+//       {
+//         model: Group,
+//       },
+//     ],
+//   });
+
+//   return res.json(user);
+// });
+
 module.exports = router;
