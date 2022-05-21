@@ -38,8 +38,6 @@ router.post("/signup", validateSignup, async (req, res) => {
 router.get("/users/current/groups", requireAuth, async (req, res) => {
   const { user } = req;
 
-  // console.log(user.id);
-
   const current = await User.findByPk(user.id, {
     include: [
       {
