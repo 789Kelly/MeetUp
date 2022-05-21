@@ -1,21 +1,21 @@
 const express = require("express");
 const router = express.Router();
 
-const { Event } = require("../../db/models");
+const { Event, User } = require("../../db/models");
 
-// router.get("/:eventId/attendees", async (req, res) => {
-//   const { eventId } = req.params;
+router.get("/:eventId/attendees", async (req, res) => {
+  const { eventId } = req.params;
 
-//   const event = await Event.findByPk(eventId, {
-//     include: [
-//       {
-//         model: User,
-//       },
-//     ],
-//   });
+  const event = await Event.findByPk(eventId, {
+    include: [
+      {
+        model: User,
+      },
+    ],
+  });
 
-//   return res.json(event);
-// });
+  return res.json(event.Users);
+});
 
 router.get("/:id", async (req, res) => {
   const eventById = await Event.findByPk(req.params.id);
