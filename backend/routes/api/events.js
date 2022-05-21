@@ -14,11 +14,28 @@ router.get("/:eventId/attendees", async (req, res) => {
     ],
   });
 
+  if (!event) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
+
   return res.json(event.Users);
 });
 
 router.get("/:id", async (req, res) => {
   const eventById = await Event.findByPk(req.params.id);
+
+  if (!eventById) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
+
   res.json(eventById);
 });
 
