@@ -23,7 +23,11 @@ router.get("/:groupId/members", async (req, res) => {
     });
   }
 
-  return res.json(group.Users);
+  const Members = group.Users;
+
+  return res.json({
+    Members,
+  });
 });
 
 router.get("/:groupId/events", async (req, res) => {
@@ -45,7 +49,11 @@ router.get("/:groupId/events", async (req, res) => {
     });
   }
 
-  return res.json(group.Events);
+  const Events = group.Events;
+
+  return res.json({
+    Events,
+  });
 });
 
 router.get("/:id", async (req, res) => {
@@ -63,8 +71,10 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const groups = await Group.findAll();
-  res.json(groups);
+  const Groups = await Group.findAll();
+  res.json({
+    Groups,
+  });
 });
 
 module.exports = router;

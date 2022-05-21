@@ -1,7 +1,7 @@
 const express = require("express");
 
 const { setTokenCookie, requireAuth } = require("../../utils/auth");
-const { User } = require("../../db/models");
+const { User, Group } = require("../../db/models");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
@@ -35,18 +35,24 @@ router.post("/signup", validateSignup, async (req, res) => {
   });
 });
 
-// router.get("users/current/groups", async (req, res) => {
-//   const { userId } = req.params;
+router.get("/users/current/groups", requireAuth, async (req, res) => {
+  const { user } = req;
 
-//   const user = await User.findByPk(userId, {
-//     include: [
-//       {
-//         model: Group,
-//       },
-//     ],
-//   });
+  // console.log(user.id);
 
-//   return res.json(user);
-// });
+  const current = await User.findByPk(user.id, {
+    include: [
+      {
+        model: Group,
+      },
+    ],
+  });
+
+  const Groups = current.Groups;
+
+  return res.json({
+    Groups,
+  });
+});
 
 module.exports = router;
