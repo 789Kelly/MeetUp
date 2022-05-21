@@ -22,7 +22,11 @@ router.get("/:eventId/attendees", async (req, res) => {
     });
   }
 
-  return res.json(event.Users);
+  const Attendees = event.Users;
+
+  return res.json({
+    Attendees,
+  });
 });
 
 router.get("/:id", async (req, res) => {
@@ -40,8 +44,10 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const events = await Event.findAll();
-  res.json(events);
+  const Events = await Event.findAll();
+  res.json({
+    Events,
+  });
 });
 
 module.exports = router;
