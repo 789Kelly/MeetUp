@@ -66,8 +66,8 @@ const events = [
     type: "test",
     capacity: 600,
     price: 6.0,
-    startDate: "2000-01-09",
-    endDate: "2000-01-10",
+    startDate: "2000-01-11",
+    endDate: "2000-01-12",
   },
   {
     groupId: 7,
@@ -77,8 +77,8 @@ const events = [
     type: "test",
     capacity: 700,
     price: 7.0,
-    startDate: "2000-01-09",
-    endDate: "2000-01-10",
+    startDate: "2000-01-13",
+    endDate: "2000-01-14",
   },
   {
     groupId: 8,
@@ -88,8 +88,8 @@ const events = [
     type: "test",
     capacity: 800,
     price: 8.0,
-    startDate: "2000-01-09",
-    endDate: "2000-01-10",
+    startDate: "2000-01-15",
+    endDate: "2000-01-16",
   },
   {
     groupId: 9,
@@ -99,8 +99,8 @@ const events = [
     type: "test",
     capacity: 900,
     price: 9.0,
-    startDate: "2000-01-09",
-    endDate: "2000-01-10",
+    startDate: "2000-01-17",
+    endDate: "2000-01-18",
   },
 ];
 

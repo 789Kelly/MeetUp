@@ -4,6 +4,7 @@ const { Group } = require("../models");
 
 const groups = [
   {
+    organizerId: 1,
     name: "Group One",
     about: "test",
     type: "test",
@@ -12,6 +13,7 @@ const groups = [
     state: "Dominican Republic",
   },
   {
+    organizerId: 2,
     name: "Group Two",
     about: "test",
     type: "test",
@@ -20,6 +22,7 @@ const groups = [
     state: "Panama",
   },
   {
+    organizerId: 3,
     name: "Group Three",
     about: "test",
     type: "test",
@@ -28,6 +31,7 @@ const groups = [
     state: "El Salvador",
   },
   {
+    organizerId: 4,
     name: "Group Four",
     about: "test",
     type: "test",
@@ -36,6 +40,7 @@ const groups = [
     state: "Russia",
   },
   {
+    organizerId: 5,
     name: "Group Five",
     about: "test",
     type: "test",
@@ -44,6 +49,7 @@ const groups = [
     state: "Belgium",
   },
   {
+    organizerId: 1,
     name: "Group Six",
     about: "test",
     type: "test",
@@ -52,6 +58,7 @@ const groups = [
     state: "China",
   },
   {
+    organizerId: 2,
     name: "Group Seven",
     about: "test",
     type: "test",
@@ -60,6 +67,7 @@ const groups = [
     state: "Italy",
   },
   {
+    organizerId: 3,
     name: "Group Eight",
     about: "test",
     type: "test",
@@ -68,6 +76,7 @@ const groups = [
     state: "Turkey",
   },
   {
+    organizerId: 4,
     name: "Group Nine",
     about: "test",
     type: "test",
