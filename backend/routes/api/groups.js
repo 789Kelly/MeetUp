@@ -2,8 +2,52 @@ const express = require("express");
 
 const router = express.Router();
 
-const { Event, Group, Membership, User, Venue } = require("../../db/models");
+const {
+  Event,
+  Group,
+  Image,
+  Membership,
+  User,
+  Venue,
+} = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
+
+router.post("/groups/:groupId/images", requireAuth, async (req, res) => {
+  const { user } = req;
+  const { groupId } = req.params;
+  const { url } = req.body;
+
+  const group = await Group.findByPk(groupId);
+
+  if (!group) {
+    res.status(404);
+    return res.json({
+      message: "Group couldn't be found",
+      statusCode: 404,
+    });
+  }
+
+  const membership = await Membership.findAll({
+    where: {
+      userId: user.id,
+      groupId,
+    },
+  });
+
+  if (user.id === group.organizerId || membership.status === "co-host") {
+    const newImage = await Image.create({
+      groupId,
+      url,
+    });
+    return res.json(newImage);
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
+});
 
 router.get("/:groupId/members", async (req, res) => {
   const { groupId } = req.params;
