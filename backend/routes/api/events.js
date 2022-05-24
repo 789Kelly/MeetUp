@@ -1,8 +1,41 @@
 const express = require("express");
 const router = express.Router();
 
-const { Group, Event, User } = require("../../db/models");
+const { Attendance, Group, Event, User } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
+
+router.put("/:eventId/attendance", requireAuth, async (req, res) => {
+  const { user } = req;
+  const { userId, status } = req.body;
+  const { eventId } = req.params;
+
+  const event = await Event.findByPk(eventId, {
+    include: [
+      {
+        model: Group,
+      },
+    ],
+  });
+
+  let attendance = await Attendance.findAll();
+
+  if (!event) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
+
+  if (user.id === event.Groups.organizerId) {
+    attendance = await attendance.update({
+      userId,
+      status,
+    });
+  }
+
+  return res.json(attendance);
+});
 
 // router.get("/:eventId/attendees", requireAuth, async (req, res) => {
 //   const { eventId } = req.params;
