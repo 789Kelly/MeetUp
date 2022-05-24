@@ -335,8 +335,67 @@ router.post("/:id", requireAuth, async (req, res) => {
 // });
 
 router.get("/", async (req, res) => {
-  const Events = await Event.findAll();
-  res.json({
+  let { name, type, startDate, page, size } = req.query;
+
+  let where = {};
+
+  if (name && name !== "") {
+    where.name = name;
+  }
+
+  if (type && type !== "" && (type === "Online" || type === "In Person")) {
+    where.type = type;
+  }
+
+  if (type !== "Online" || type !== "In Person") {
+    res.statusCode = 400;
+    return res.json({
+      message: "Validation Error",
+      statusCode: 400,
+      errors: {
+        type: "Type must be 'Online' or 'In Person'",
+      },
+    });
+  }
+
+  if (startDate && startDate !== "") {
+    where.startDate = startDate;
+  }
+
+  page = parseInt(page);
+  size = parseInt(size);
+
+  if (Number.isNaN(page) || page < 0 || page > 10) {
+    page = 0;
+    res.status = 400;
+    return res.json({
+      message: "Validation Error",
+      statusCode: 400,
+      errors: {
+        page: "Page must be greater than or equal to 0",
+      },
+    });
+  }
+
+  if (Number.isNaN(size) || size < 0 || size > 20) {
+    size = 20;
+    res.status = 400;
+    return res.json({
+      message: "Validation Error",
+      statusCode: 400,
+      errors: {
+        size: "Size must be greater than or equal to 0",
+      },
+    });
+  }
+
+  const Events = await Event.findAll({
+    where,
+    limit: size,
+    offset: size * (page - 1),
+  });
+
+  return res.json({
     Events,
   });
 });
