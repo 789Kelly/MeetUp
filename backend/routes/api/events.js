@@ -1,13 +1,23 @@
 const express = require("express");
 const router = express.Router();
 
-const { Attendance, Group, Event, User } = require("../../db/models");
+const { Attendance, Group, Event, Membership } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 
 router.put("/:eventId/attendance", requireAuth, async (req, res) => {
   const { user } = req;
   const { userId, status } = req.body;
   const { eventId } = req.params;
+
+  if (status === "pending") {
+    res.status(400);
+    return res.json({
+      message: "Cannot change an attendance status to pending",
+      statusCode: 400,
+    });
+  }
+
+
 
   const event = await Event.findByPk(eventId, {
     include: [
@@ -17,7 +27,18 @@ router.put("/:eventId/attendance", requireAuth, async (req, res) => {
     ],
   });
 
-  let attendance = await Attendance.findAll();
+    const membership = await Membership.findAll({
+      where: {
+        userId,
+        groupId:
+      },
+    });
+
+  let attendance = await Attendance.findAll({
+    where: {
+      userId,
+    },
+  });
 
   if (!event) {
     res.status(404);
@@ -27,14 +48,26 @@ router.put("/:eventId/attendance", requireAuth, async (req, res) => {
     });
   }
 
-  if (user.id === event.Groups.organizerId) {
-    attendance = await attendance.update({
-      userId,
-      status,
+  if (!attendance) {
+    res.status(404);
+    return res.json({
+      message: "Attendance between the user and the event does not exist",
+      statusCode: 404,
     });
   }
 
-  return res.json(attendance);
+  if (user.id !== event.Groups.organizerId) {
+    await attendance.update({
+      status,
+    });
+    return res.json(attendance);
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 });
 
 // router.get("/:eventId/attendees", requireAuth, async (req, res) => {
