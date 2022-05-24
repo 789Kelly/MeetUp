@@ -243,7 +243,7 @@ Returns all the groups.
           "id": 1,
           "organizerId": 1,
           "name": "Evening Tennis on the Water",
-          "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+          "about": "Enjoy rounds of tennis with a tight-knit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
           "type": "In person",
           "private": true,
           "city": "New York",
@@ -282,7 +282,7 @@ Returns all the groups.
           "id": 1,
           "organizerId": 1,
           "name": "Evening Tennis on the Water",
-          "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+          "about": "Enjoy rounds of tennis with a tight-knit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
           "type": "In person",
           "private": true,
           "city": "New York",
@@ -319,7 +319,7 @@ Returns the details of a group specified by its id.
       "id": 1,
       "organizerId": 1,
       "name": "Evening Tennis on the Water",
-      "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+      "about": "Enjoy rounds of tennis with a tight-knit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
       "type": "In person",
       "private": true,
       "city": "New York",
@@ -366,7 +366,7 @@ Creates and returns a new group.
     ```json
     {
       "name": "Evening Tennis on the Water",
-      "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+      "about": "Enjoy rounds of tennis with a tight-knit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
       "type": "In person",
       "private": true,
       "city": "New York",
@@ -386,7 +386,7 @@ Creates and returns a new group.
       "id": 1,
       "organizerId": 1,
       "name": "Evening Tennis on the Water",
-      "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+      "about": "Enjoy rounds of tennis with a tight-knit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
       "type": "In person",
       "private": true,
       "city": "New York",
@@ -435,7 +435,7 @@ Updates and returns an existing group.
     ```json
     {
       "name": "Evening Tennis on the Water",
-      "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+      "about": "Enjoy rounds of tennis with a tight-knit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
       "type": "In person",
       "private": true,
       "city": "New York",
@@ -455,7 +455,7 @@ Updates and returns an existing group.
       "id": 1,
       "organizerId": 1,
       "name": "Evening Tennis on the Water",
-      "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+      "about": "Enjoy rounds of tennis with a tight-knit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
       "type": "In person",
       "private": true,
       "city": "New York",
@@ -812,7 +812,7 @@ Change the status of a membership for a group specified by id.
 
     ```json
     {
-      "message": "Membership between the user and the group does not exits",
+      "message": "Membership between the user and the group does not exist",
       "statusCode": 404
     }
     ```
