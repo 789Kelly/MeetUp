@@ -9,6 +9,7 @@ const {
   Membership,
   User,
   Venue,
+  Sequelize,
 } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 
@@ -262,8 +263,25 @@ router.delete("/:id", requireAuth, async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const Groups = await Group.findAll();
-  res.json({
+  const Groups = await Group.findAll({
+    attributes: {
+      include: [
+        [
+          Sequelize.fn("COUNT", Sequelize.col("Memberships.groupId")),
+          "numMembers",
+        ],
+      ],
+    },
+    include: {
+      model: Membership,
+      attributes: [],
+    },
+    include: {
+      model: Image,
+      attributes: [url],
+    },
+  });
+  return res.json({
     Groups,
   });
 });
