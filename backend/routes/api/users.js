@@ -6,10 +6,17 @@ const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
 const validateSignup = [
+  check("firstName")
+    .exists({ checkFalsy: true })
+    .withMessage("First Name is required"),
+  check("lastName")
+    .exists({ checkFalsy: true })
+    .withMessage("Last Name is required"),
   check("email")
     .exists({ checkFalsy: true })
+    .withMessage("User already exists")
     .isEmail()
-    .withMessage("Please provide a valid email."),
+    .withMessage("Invalid email"),
   check("username")
     .exists({ checkFalsy: true })
     .isLength({ min: 4 })
@@ -25,13 +32,27 @@ const validateSignup = [
 const router = express.Router();
 
 router.post("/signup", validateSignup, async (req, res) => {
-  const { email, password, username } = req.body;
-  const user = await User.signup({ email, username, password });
+  let { firstName, lastName, email, username, password } = req.body;
+  const user = await User.signup({
+    firstName,
+    lastName,
+    email,
+    username,
+    password,
+  });
 
-  await setTokenCookie(res, user);
+  const token = await setTokenCookie(res, user);
+  const id = user.id;
+  firstName = user.firstName;
+  lastName = user.lastName;
+  email = user.email;
 
   return res.json({
-    user,
+    id,
+    firstName,
+    lastName,
+    email,
+    token,
   });
 });
 

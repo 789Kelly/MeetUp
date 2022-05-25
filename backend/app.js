@@ -9,7 +9,7 @@ const cookieParser = require("cookie-parser");
 const { environment } = require("./config");
 const { ValidationError } = require("sequelize");
 const routes = require("./routes");
-const isProduction = environment === "production";
+let isProduction = environment === "production";
 
 const app = express();
 
@@ -69,11 +69,16 @@ app.use((err, _req, _res, next) => {
 app.use((err, _req, res, _next) => {
   res.status(err.status || 500);
   console.error(err);
+  const option = {};
+  // isProduction = true;
+  if (!isProduction) {
+    option.stack = err.stack;
+  }
   res.json({
-    title: err.title || "Server Error",
+    statusCode: res.statusCode,
     message: err.message,
     errors: err.errors,
-    stack: isProduction ? null : err.stack,
+    ...option,
   });
 });
 
