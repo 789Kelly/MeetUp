@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Group.hasMany(models.Venue, { foreignKey: "groupId" });
       Group.hasMany(models.Image, { foreignKey: "groupId" });
       Group.belongsTo(models.User, { foreignKey: "organizerId" });
+      Group.hasMany(models.Membership, { foreignKey: "groupId" });
     }
   }
   Group.init(

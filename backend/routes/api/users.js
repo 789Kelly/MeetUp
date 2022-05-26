@@ -1,7 +1,7 @@
 const express = require("express");
 
 const { setTokenCookie, requireAuth } = require("../../utils/auth");
-const { User, Group } = require("../../db/models");
+const { Group, Membership, User } = require("../../db/models");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
@@ -59,15 +59,41 @@ router.post("/signup", validateSignup, async (req, res) => {
 router.get("/users/current/groups", requireAuth, async (req, res) => {
   const { user } = req;
 
-  const current = await User.findByPk(user.id, {
+  // const current = await User.findByPk(user.id, {
+  //   include: [
+  //     {
+  //       model: Group,
+  //     },
+  //   ],
+  // });
+
+  // const Groups = current.Groups;
+
+  // const membership = await Membership.findAll({
+  //   where: {
+  //     userId: user.id,
+  //   },
+  //   include: [
+  //     {
+  //       model: Group,
+  //     },
+  //   ],
+  // });
+
+  const Groups = await Group.findAll({
     include: [
       {
-        model: Group,
+        model: User,
+        where: {
+          id: user.id,
+        },
+        attributes: [],
+        through: {
+          attributes: [],
+        },
       },
     ],
   });
-
-  const Groups = current.Groups;
 
   return res.json({
     Groups,

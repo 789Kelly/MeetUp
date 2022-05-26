@@ -9,8 +9,32 @@ const {
   Membership,
   User,
   Venue,
+  sequelize,
 } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
+const { check } = require("express-validator");
+const { handleValidationErrors } = require("../../utils/validation");
+
+const validateGroup = [
+  check("name")
+    .isLength({ max: 60 })
+    .withMessage("Name must be 60 characters or less"),
+  check("about")
+    .isLength({ min: 50 })
+    .withMessage("About must be 50 characters or more"),
+  check("type")
+    .isIn(["Online", "In person"])
+    .withMessage("Type must be Online or In person"),
+  check("private")
+    .isLength({ min: 4 })
+    .withMessage("Please provide a username with at least 4 characters."),
+  check("username").not().isEmail().withMessage("Username cannot be an email."),
+  check("password")
+    .exists({ checkFalsy: true })
+    .isLength({ min: 6 })
+    .withMessage("Password must be 6 characters or more."),
+  handleValidationErrors,
+];
 
 router.post("/groups/:groupId/images", requireAuth, async (req, res) => {
   const { user } = req;
@@ -197,8 +221,8 @@ router.post("/:groupId/venues", requireAuth, async (req, res) => {
   return res.json(newVenue);
 });
 
-router.get("/:id", async (req, res) => {
-  const groupById = await Group.findByPk(req.params.id);
+router.get("/:groupId", async (req, res) => {
+  const groupById = await Group.findByPk(req.params.groupId);
 
   if (!groupById) {
     res.status(404);
@@ -208,7 +232,13 @@ router.get("/:id", async (req, res) => {
     });
   }
 
-  res.json(groupById);
+  const Organizer = await User.findByPk(groupById.organizerId);
+
+  res.status(200);
+  return res.json({
+    groupById,
+    Organizer,
+  });
 });
 
 router.put("/:id", requireAuth, async (req, res) => {
@@ -262,8 +292,50 @@ router.delete("/:id", requireAuth, async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const Groups = await Group.findAll();
-  res.json({
+  const Groups = await Group.findAll({
+    include: [
+      {
+        model: Membership,
+        attributes: [],
+      },
+      {
+        model: Image,
+        attributes: [],
+      },
+    ],
+    attributes: [
+      "id",
+      "organizerId",
+      "name",
+      "about",
+      "type",
+      "private",
+      "city",
+      "state",
+      "createdAt",
+      "updatedAt",
+      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+      [sequelize.col("Images.url"), "previewImage"],
+    ],
+    group: ["Group.id"],
+    //   attributes: {
+    //     include: [
+    //       [
+    //         sequelize.fn("COUNT", sequelize.col("Memberships.groupId")),
+    //         "numMembers",
+    //       ],
+    //     ],
+    //   },
+    //   include: {
+    //     model: Membership,
+    //     attributes: [],
+    //   },
+    //   include: {
+    //     model: Image,
+    //     attributes: [url],
+    //   },
+  });
+  return res.json({
     Groups,
   });
 });
@@ -288,7 +360,7 @@ router.post("/", requireAuth, async (req, res) => {
       statusCode: 400,
     });
   }
-
+  res.status(201);
   return res.json(newGroup);
 });
 
