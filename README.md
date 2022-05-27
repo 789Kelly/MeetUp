@@ -644,7 +644,7 @@ Request a new membership for a group specified by id.
 - Request
 
   - Method: POST
-  - URL: /groups/:groupId/members
+  - URL: /groups/:groupId/memberships
   - Headers:
     - Content-Type: application/json
   - Body: none
@@ -1068,7 +1068,7 @@ Returns the details of an event specified by its id.
 Creates and returns a new venue for a group specified by its id
 
 - Require Authentication: true
-- Require Authentication: Current User must be the organizer of the group or a member of
+- Require Authorization: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 - Request
 
@@ -1557,7 +1557,7 @@ Request attendance for an event specified by id.
 - Request
 
   - Method: POST
-  - URL: /events/:eventId
+  - URL: /events/:eventId/attendances
   - Headers:
     - Content-Type: application/json
   - Body: none
