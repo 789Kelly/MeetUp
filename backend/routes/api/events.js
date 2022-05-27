@@ -28,6 +28,8 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
     ],
   });
 
+  const group = await Group.findByPk;
+
   let newAttendance = {};
 
   if (!event) {
@@ -285,22 +287,6 @@ router.get("/:eventId", async (req, res) => {
         model: Attendance,
         attributes: [],
       },
-    ],
-    attributes: [
-      "id",
-      "groupId",
-      "venueId",
-      "name",
-      "description",
-      "type",
-      "capacity",
-      "price",
-      "startDate",
-      "endDate",
-      [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-    ],
-    group: ["Event.id"],
-    include: [
       {
         model: Group,
         as: "Group",
@@ -317,6 +303,20 @@ router.get("/:eventId", async (req, res) => {
         attributes: ["url"],
       },
     ],
+    attributes: [
+      "id",
+      "groupId",
+      "venueId",
+      "name",
+      "description",
+      "type",
+      "capacity",
+      "price",
+      "startDate",
+      "endDate",
+      [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+    ],
+    group: ["Event.id"],
   });
 
   if (!event) {

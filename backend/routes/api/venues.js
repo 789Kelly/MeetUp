@@ -5,7 +5,7 @@ const router = express.Router();
 const { Group, Membership, Venue } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 
-router.put("/venues/:venueId", requireAuth, async (req, res) => {
+router.get("/:venueId", requireAuth, async (req, res) => {
   const { user } = req;
   let { address, city, state, lat, lng } = req.body;
   let { venueId } = req.params;
@@ -15,14 +15,12 @@ router.put("/venues/:venueId", requireAuth, async (req, res) => {
     include: [
       {
         model: Group,
-        attributes: [],
         include: [
           {
             model: Membership,
             as: "Memberships",
-            attributes: [],
             where: {
-              userId: user.Id,
+              userId: user.id,
             },
           },
         ],
@@ -37,6 +35,10 @@ router.put("/venues/:venueId", requireAuth, async (req, res) => {
       statusCode: 404,
     });
   }
+
+  console.log(venue);
+
+  return res.json(venue);
 
   const group = venue.Groups[0];
   const membership = venue.Groups[0].Memberships[0];
