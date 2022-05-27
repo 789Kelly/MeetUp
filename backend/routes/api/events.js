@@ -1,4 +1,5 @@
 const express = require("express");
+const { user } = require("pg/lib/defaults");
 const router = express.Router();
 
 const {
@@ -7,8 +8,46 @@ const {
   Group,
   Image,
   Membership,
+  sequelize,
+  User,
+  Venue,
 } = require("../../db/models");
+const { Op } = require("sequelize");
 const { requireAuth } = require("../../utils/auth");
+
+router.post("/:eventId/attendances", requireAuth, async (req, res) => {
+  const { userId, status } = req.body;
+  const { eventId } = req.params;
+  const { user } = req;
+  //find all where event id and user id - if exists then throw error
+  const event = await Event.findByPk(id, {
+    include: [
+      {
+        model: Attendance,
+      },
+    ],
+  });
+
+  let newAttendance = {};
+
+  if (!event) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
+
+  if (user.id === userId) {
+    newAttendance = await Attendance.create({
+      eventId,
+      userId,
+      status,
+    });
+  }
+
+  return res.json(newAttendance);
+});
 
 router.post("/:eventId/images", requireAuth, async (req, res) => {
   const { user } = req;
@@ -173,41 +212,24 @@ router.delete("/:eventId/attendance", requireAuth, async (req, res) => {
   }
 });
 
-// router.get("/:eventId/attendees", requireAuth, async (req, res) => {
-//   const { eventId } = req.params;
-//   // const { user } = req;
+router.get("/:eventId/attendees", requireAuth, async (req, res) => {
+  const { eventId } = req.params;
+  const { user } = req;
 
-//   const event = await Event.findByPk(eventId, {
-//     include: [
-//       {
-//         model: User,
-//       },
-//     ],
-//   });
+  const event = await Event.findByPk(eventId);
 
-//   const group = await Group.findByPk(event.groupId);
+  const group = await Group.findByPk(event.groupId, {
+    include: [
+      {
+        model: Membership,
+        where: {
+          groupId: user.id,
+        },
+      },
+    ],
+  });
 
-//   if (!event) {
-//     res.status(404);
-//     return res.json({
-//       message: "Event couldn't be found",
-//       statusCode: 404,
-//     });
-//   }
-
-//   const Attendees = event.Users;
-
-//     if (group.organizerId === user.id) {
-//       return res.json({
-//         Attendees,
-//       });
-//     }
-// });
-
-router.get("/:id", async (req, res) => {
-  const eventById = await Event.findByPk(req.params.id);
-
-  if (!eventById) {
+  if (!event) {
     res.status(404);
     return res.json({
       message: "Event couldn't be found",
@@ -215,10 +237,100 @@ router.get("/:id", async (req, res) => {
     });
   }
 
-  res.json(eventById);
+  const membership = group.Memberships[0];
+  let Attendees;
+
+  if (group.organizerId === user.id || membership.status === "co-host") {
+    Attendees = await User.findAll({
+      attributes: ["id", "firstName", "lastName"],
+      include: [
+        {
+          model: Attendance,
+          as: "Attendance",
+          attributes: ["status"],
+          where: {
+            eventId: event.id,
+            [Op.or]: [{ status: "member" }, { status: "waitlist" }],
+          },
+        },
+      ],
+    });
+  } else {
+    Attendees = await User.findAll({
+      attributes: ["id", "firstName", "lastName"],
+      include: [
+        {
+          model: Attendance,
+          as: "Attendance",
+          where: {
+            eventId: event.id,
+          },
+          attributes: ["status"],
+        },
+      ],
+    });
+  }
+
+  return res.json({
+    Attendees,
+  });
 });
 
-// router.put("/:id", requireAuth, async (req, res) => {
+router.get("/:eventId", async (req, res) => {
+  const { eventId } = req.params;
+
+  const event = await Event.findByPk(eventId, {
+    include: [
+      {
+        model: Attendance,
+        attributes: [],
+      },
+    ],
+    attributes: [
+      "id",
+      "groupId",
+      "venueId",
+      "name",
+      "description",
+      "type",
+      "capacity",
+      "price",
+      "startDate",
+      "endDate",
+      [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+    ],
+    group: ["Event.id"],
+    include: [
+      {
+        model: Group,
+        as: "Group",
+        attributes: ["id", "name", "private", "city", "state"],
+      },
+      {
+        model: Venue,
+        as: "Venue",
+        attributes: ["id", "address", "city", "state", "lat", "lng"],
+      },
+      {
+        model: Image,
+        as: "images",
+        attributes: ["url"],
+      },
+    ],
+  });
+
+  if (!event) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
+
+  res.json(event);
+});
+
+// router.put("/:eventId", requireAuth, async (req, res) => {
 //   const { user } = req;
 //   const {
 //     venueId,
@@ -230,24 +342,33 @@ router.get("/:id", async (req, res) => {
 //     startDate,
 //     endDate,
 //   } = req.body;
-//   const { id } = req.params;
+//   const { eventId } = req.params;
 
 //   const venue = await Venue.findByPk(venueId);
 
-//   const event = await Event.findByPk(id, {
+//   const event = await Event.findByPk(eventId, {
+//     attributes: ["id", "groupId", "venueId", "name", "type", "capacity", "price", "description", "startDate", "endDate"],
 //     include: [
 //       {
 //         model: Group,
+//         include: [
+//           {
+//           model: Membership,
+//           where: {
+//             userId: user.id,
+//           },
+//           }
+//         ]
 //       },
 //     ],
 //   });
 
-//   // if (!venue) {
-//   //   res.status(404);
-//   //   return res.json({
-//   //     message: "Venue couldn't be found",
-//   //     statusCode: 404,
-//   // }
+//   if (!venue) {
+//     res.status(404);
+//     return res.json({
+//       message: "Venue couldn't be found",
+//       statusCode: 404,
+//   }
 
 //   if (!event) {
 //         res.status(404);
@@ -256,7 +377,10 @@ router.get("/:id", async (req, res) => {
 //       statusCode: 404,
 //   }
 
-//   if (user.id === Group.organizerId) {
+//   const group = event.Groups[0];
+//   const membership = event.Groups[0].Memberships[0];
+
+//   if (user.id === group.organizerId || membership.status === "co-host") {
 //     await event.update({
 //       groupId,
 //       venueId,
@@ -273,20 +397,27 @@ router.get("/:id", async (req, res) => {
 //   return res.json(event);
 // });
 
-router.post("/:id", requireAuth, async (req, res) => {
-  const { eventId, userId, status } = req.body;
-  const { id } = req.params;
+router.delete("/:eventId", requireAuth, async (req, res) => {
+  const { eventId } = req.params;
   const { user } = req;
-  //find all where event id and user id - if exists then throw error
-  const event = await Event.findByPk(id, {
+
+  const event = await Event.findByPk(eventId, {
     include: [
       {
-        model: Attendance,
+        model: Group,
+        include: [
+          {
+            model: Membership,
+          },
+        ],
       },
     ],
   });
 
-  let newAttendance = {};
+  // const group = await Group.findByPk(event.groupId);
+
+  const group = event.Groups[0];
+  const membership = group.Memberships[0];
 
   if (!event) {
     res.status(404);
@@ -296,43 +427,21 @@ router.post("/:id", requireAuth, async (req, res) => {
     });
   }
 
-  if (user.id === userId) {
-    newAttendance = await Attendance.create({
-      eventId,
-      userId,
-      status,
+  if (user.id === group.organizerId || membership.status === "co-host") {
+    await event.destroy();
+
+    return res.json({
+      message: "Successfully deleted",
+      statusCode: 200,
+    });
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
     });
   }
-
-  return res.json(newAttendance);
 });
-
-// router.delete("/:eventId", requireAuth, async (req, res) => {
-//   const { eventId } = req.params;
-//   const { user } = req;
-
-//   const event = await Event.findByPk(eventId,
-//     include:
-//     model: Group);
-//   const group = await Group.findByPk(event.groupId);
-
-//   if (!event) {
-//     res.status(404);
-//     return res.json({
-//       message: "Event couldn't be found",
-//       statusCode: 404,
-//     });
-//   }
-
-//   if (user.id === group.organizerId) {
-//     await event.destroy();
-//   }
-
-//   return res.json({
-//     message: "Successfully deleted",
-//     statusCode: 200,
-//   });
-// });
 
 router.get("/", async (req, res) => {
   let { name, type, startDate, page, size } = req.query;

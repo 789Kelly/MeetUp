@@ -59,27 +59,6 @@ router.post("/signup", validateSignup, async (req, res) => {
 router.get("/users/current/groups", requireAuth, async (req, res) => {
   const { user } = req;
 
-  // const current = await User.findByPk(user.id, {
-  //   include: [
-  //     {
-  //       model: Group,
-  //     },
-  //   ],
-  // });
-
-  // const Groups = current.Groups;
-
-  // const membership = await Membership.findAll({
-  //   where: {
-  //     userId: user.id,
-  //   },
-  //   include: [
-  //     {
-  //       model: Group,
-  //     },
-  //   ],
-  // });
-
   const Groups = await Group.findAll({
     include: [
       {

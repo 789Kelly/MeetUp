@@ -2,27 +2,33 @@ const express = require("express");
 
 const router = express.Router();
 
-const { Group, Venue } = require("../../db/models");
+const { Group, Membership, Venue } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 
 router.put("/venues/:venueId", requireAuth, async (req, res) => {
   const { user } = req;
-  const { groupId, address, city, state, lat, lng } = req.body;
-  const { venueId } = req.params;
+  let { address, city, state, lat, lng } = req.body;
+  let { venueId } = req.params;
 
-  const group = await Group.findByPk(groupId);
-  const venue = await Venue.findByPk(venueId);
-
-  if (user.id === group.organizerId) {
-    venue.update({
-      groupId,
-      address,
-      city,
-      state,
-      lat,
-      lng,
-    });
-  }
+  const venue = await Venue.findByPk(venueId, {
+    attributes: ["groupId", "address", "city", "state", "lat", "lng"],
+    include: [
+      {
+        model: Group,
+        attributes: [],
+        include: [
+          {
+            model: Membership,
+            as: "Memberships",
+            attributes: [],
+            where: {
+              userId: user.Id,
+            },
+          },
+        ],
+      },
+    ],
+  });
 
   if (!venue) {
     res.status(404);
@@ -32,7 +38,43 @@ router.put("/venues/:venueId", requireAuth, async (req, res) => {
     });
   }
 
-  return res.json(newVenue);
+  const group = venue.Groups[0];
+  const membership = venue.Groups[0].Memberships[0];
+
+  if (user.id === group.organizerId || membership.status === "co-host") {
+    const updatedVenue = await Venue.update({
+      groupId: group.id,
+      address,
+      city,
+      state,
+      lat,
+      lng,
+    });
+
+    let id = updatedVenue.id;
+    let groupId = updatedVenue.groupId;
+    address = updatedVenue.address;
+    city = updatedVenue.city;
+    state = updatedVenue.state;
+    lat = updatedVenue.lat;
+    lng = updatedVenue.lng;
+
+    return res.json({
+      id,
+      groupId,
+      address,
+      city,
+      state,
+      lat,
+      lng,
+    });
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 });
 
 module.exports = router;
