@@ -5,13 +5,12 @@ const router = express.Router();
 const { Group, Membership, Venue } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 
-router.get("/:venueId", requireAuth, async (req, res) => {
+router.put("/:venueId", requireAuth, async (req, res) => {
   const { user } = req;
   let { address, city, state, lat, lng } = req.body;
   let { venueId } = req.params;
 
   const venue = await Venue.findByPk(venueId, {
-    attributes: ["groupId", "address", "city", "state", "lat", "lng"],
     include: [
       {
         model: Group,
@@ -36,16 +35,11 @@ router.get("/:venueId", requireAuth, async (req, res) => {
     });
   }
 
-  console.log(venue);
-
-  return res.json(venue);
-
-  const group = venue.Groups[0];
-  const membership = venue.Groups[0].Memberships[0];
+  const group = venue.Group;
+  const membership = venue.Group.Membership;
 
   if (user.id === group.organizerId || membership.status === "co-host") {
-    const updatedVenue = await Venue.update({
-      groupId: group.id,
+    const updatedVenue = await venue.update({
       address,
       city,
       state,

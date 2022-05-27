@@ -225,7 +225,7 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
       {
         model: Membership,
         where: {
-          groupId: user.id,
+          userId: user.id,
         },
       },
     ],
@@ -239,10 +239,26 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
     });
   }
 
+  // return res.json(group);
+
   const membership = group.Memberships[0];
   let Attendees;
 
   if (group.organizerId === user.id || membership.status === "co-host") {
+    Attendees = await User.findAll({
+      attributes: ["id", "firstName", "lastName"],
+      include: [
+        {
+          model: Attendance,
+          as: "Attendance",
+          where: {
+            eventId: event.id,
+          },
+          attributes: ["status"],
+        },
+      ],
+    });
+  } else {
     Attendees = await User.findAll({
       attributes: ["id", "firstName", "lastName"],
       include: [
@@ -254,20 +270,6 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
             eventId: event.id,
             [Op.or]: [{ status: "member" }, { status: "waitlist" }],
           },
-        },
-      ],
-    });
-  } else {
-    Attendees = await User.findAll({
-      attributes: ["id", "firstName", "lastName"],
-      include: [
-        {
-          model: Attendance,
-          as: "Attendance",
-          where: {
-            eventId: event.id,
-          },
-          attributes: ["status"],
         },
       ],
     });
