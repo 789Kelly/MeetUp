@@ -16,7 +16,6 @@ const { Op } = require("sequelize");
 const { requireAuth } = require("../../utils/auth");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
-const membership = require("../../db/models/membership");
 
 const validateGroup = [
   check("name")
@@ -154,9 +153,10 @@ router.delete(
 
 router.post("/:groupId/images", requireAuth, async (req, res) => {
   const { user } = req;
-  const { groupId } = req.params;
-  const { url } = req.body;
+  let { groupId } = req.params;
+  let { url } = req.body;
 
+  groupId = parseInt(groupId);
   const group = await Group.findByPk(groupId);
 
   if (!group) {
@@ -179,7 +179,16 @@ router.post("/:groupId/images", requireAuth, async (req, res) => {
       groupId,
       url,
     });
-    return res.json(newImage);
+
+    let id = newImage.id;
+    groupId = newImage.groupId;
+    url = newImage.url;
+
+    return res.json({
+      id,
+      groupId,
+      url,
+    });
   } else {
     res.status(403);
     return res.json({
@@ -304,61 +313,61 @@ router.post("/:groupId/memberships", requireAuth, async (req, res) => {
   return res.json(newMembership);
 });
 
-// router.get("/:groupId/events", async (req, res) => {
-//   const { groupId } = req.params;
+router.get("/:groupId/events", async (req, res) => {
+  const { groupId } = req.params;
 
-//   const group = await Group.findByPk(groupId);
+  const group = await Group.findByPk(groupId);
 
-//   if (!group) {
-//     res.status(404);
-//     return res.json({
-//       message: "Group couldn't be found",
-//       statusCode: 404,
-//     });
-//   }
+  if (!group) {
+    res.status(404);
+    return res.json({
+      message: "Group couldn't be found",
+      statusCode: 404,
+    });
+  }
 
-//   const Events = await Event.findAll({
-//     include: [
-//       {
-//         model: Attendance,
-//         attributes: [],
-//       },
-//       {
-//         model: Image,
-//         as: "images",
-//         attributes: [],
-//       },
-//       {
-//         model: Group,
-//         as: "Group",
-//         where: {
-//           id: groupId,
-//         },
-//         attributes: ["id", "name", "city", "state"],
-//       },
-//       {
-//         model: Venue,
-//         as: "Venue",
-//         attributes: ["id", "city", "state"],
-//       },
-//     ],
-//     attributes: [
-//       "id",
-//       "groupId",
-//       "venueId",
-//       "name",
-//       "type",
-//       "startDate",
-//       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-//       [sequelize.col("Images.url"), "previewImage"],
-//     ],
-//     group: ["Event.id"],
-//   });
+  const Events = await Event.findAll({
+    include: [
+      {
+        model: Attendance,
+        attributes: [],
+      },
+      {
+        model: Image,
+        as: "images",
+        attributes: [],
+      },
+      {
+        model: Group,
+        as: "Group",
+        where: {
+          id: groupId,
+        },
+        attributes: ["id", "name", "city", "state"],
+      },
+      {
+        model: Venue,
+        as: "Venue",
+        attributes: ["id", "city", "state"],
+      },
+    ],
+    attributes: [
+      "id",
+      "groupId",
+      "venueId",
+      "name",
+      "type",
+      "startDate",
+      [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+      [sequelize.col("Images.url"), "previewImage"],
+    ],
+    group: ["Event.id"],
+  });
 
-//   return res.json({
-//     Events,
-//   });
-// });
+  return res.json({
+    Events,
+  });
+});
 
 router.post("/:groupId/events", requireAuth, async (req, res) => {
   const { user } = req;

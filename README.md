@@ -1710,7 +1710,7 @@ Delete an attendance to an event specified by id.
 - Request
 
   - Method: DELETE
-  - URL: /events/:eventId/attendance
+  - URL: events/:eventId/attendances/:attendanceId
   - Headers:
     - Content-Type: application/json
   - Body: none
@@ -1792,7 +1792,7 @@ Create and return a new image for a group specified by id.
     }
     ```
 
-## Add an Image to a Event based on the Event's id
+## Add an Image to an Event based on the Event's id
 
 Create and return a new image for an event specified by id.
 
