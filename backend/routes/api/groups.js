@@ -64,9 +64,9 @@ const validateEvent = [
     .exists({ checkFalsy: true })
     .withMessage("Description is required"),
   check("startDate").isAfter().withMessage("Start date must be in the future"),
-  check("endDate")
-    .isAfter("startDate")
-    .withMessage("End date is less than start date"),
+  // check("endDate")
+  //   .isAfter("startDate")
+  //   .withMessage("End date is less than start date"),
   handleValidationErrors,
 ];
 
