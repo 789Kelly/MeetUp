@@ -557,7 +557,7 @@ router.post(
 );
 
 router.get("/:groupId", async (req, res) => {
-  const { groupId } = req.params;
+  let { groupId } = req.params;
 
   const group = await Group.findByPk(groupId);
   const organizer = group.organizerId;
@@ -578,6 +578,9 @@ router.get("/:groupId", async (req, res) => {
         where: {
           id: organizer,
         },
+        through: {
+          attributes: [],
+        },
       },
     ],
     attributes: [
@@ -596,13 +599,13 @@ router.get("/:groupId", async (req, res) => {
     ],
     group: [
       "Group.id",
-      "Images.url",
-      "Users.id",
-      "Users.Membership.status",
-      "Users.Membership.userId",
-      "Users.Membership.groupId",
-      "Users.Membership.createdAt",
-      "Users.Membership.updatedAt",
+      // "Images.url",
+      // "Users.id",
+      // "Users.Membership.status",
+      // "Users.Membership.userId",
+      // "Users.Membership.groupId",
+      // "Users.Membership.createdAt",
+      // "Users.Membership.updatedAt",
     ],
   });
 
@@ -614,9 +617,19 @@ router.get("/:groupId", async (req, res) => {
     });
   }
 
-  return res.json({
-    Groups,
-  });
+  // let id = Groups.id;
+  // let organizerId = Groups.organizerId;
+  // let name = Groups.name;
+  // let about = Groups.about;
+  // let type = Groups.type;
+  // let private = Groups.private;
+  // let city = Groups.city;
+  // let state = Groups.state;
+  // let createdAt = Groups.createdAt;
+  // let updatedAt = Groups.updatedAt;
+  // numMembers = Groups.numMembers;
+
+  return res.json(Groups);
 });
 
 router.put("/:groupId", requireAuth, validateGroup, async (req, res) => {
