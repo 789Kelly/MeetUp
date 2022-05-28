@@ -70,8 +70,8 @@ const validateEvent = [
   handleValidationErrors,
 ];
 
-router.put("/:groupId/users/:userId", requireAuth, async (req, res) => {
-  const { groupId, userId } = req.params;
+router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
+  const { groupId } = req.params;
   const { memberId, status } = req.body;
   const { user } = req;
 
@@ -151,43 +151,39 @@ router.put("/:groupId/users/:userId", requireAuth, async (req, res) => {
   return res.json(membership);
 });
 
-router.delete(
-  "/:groupId/memberships/:membershipId",
-  requireAuth,
-  async (req, res) => {
-    const { groupId, membershipId } = req.params;
-    const { user } = req;
+router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
+  const { groupId, membershipId } = req.params;
+  const { user } = req;
 
-    const group = await Group.findByPk(groupId);
-    const membership = await Membership.findByPk(membershipId);
+  const group = await Group.findByPk(groupId);
+  const membership = await Membership.findByPk(membershipId);
 
-    if (!group) {
-      res.status(404);
-      return res.json({
-        message: "Group couldn't be found",
-        statusCode: 404,
-      });
-    }
-
-    if (
-      user.id !== group.organizerId &&
-      membership.status !== "co-host" &&
-      membership.userId !== user.Id
-    ) {
-      res.status(403);
-      return res.json({
-        message: "Forbidden",
-        statusCode: 403,
-      });
-    } else {
-      await membership.destroy();
-
-      return res.json({
-        message: "Successfully deleted membership from group",
-      });
-    }
+  if (!group) {
+    res.status(404);
+    return res.json({
+      message: "Group couldn't be found",
+      statusCode: 404,
+    });
   }
-);
+
+  if (
+    user.id !== group.organizerId &&
+    membership.status !== "co-host" &&
+    membership.userId !== user.Id
+  ) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  } else {
+    await membership.destroy();
+
+    return res.json({
+      message: "Successfully deleted membership from group",
+    });
+  }
+});
 
 router.post("/:groupId/images", requireAuth, async (req, res) => {
   const { user } = req;
@@ -400,7 +396,7 @@ router.get("/:groupId/events", async (req, res) => {
       "type",
       "startDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-      [sequelize.col("Images.url"), "previewImage"],
+      [sequelize.col("images.url"), "previewImage"],
     ],
     group: ["Event.id"],
   });
