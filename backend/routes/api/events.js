@@ -111,8 +111,8 @@ router.delete(
 
 router.put("/:eventId/attendance", requireAuth, async (req, res) => {
   const { user } = req;
-  const { userId, status } = req.body;
-  const { eventId } = req.params;
+  let { userId, status } = req.body;
+  let { eventId } = req.params;
 
   if (status === "pending") {
     res.status(400);
@@ -153,7 +153,7 @@ router.put("/:eventId/attendance", requireAuth, async (req, res) => {
       userId,
       eventId,
     },
-    attributes: ["id", "status", "userId", "eventId"],
+    // attributes: ["id", "status", "userId", "eventId"],
   });
 
   // return res.json(attendance);
@@ -170,21 +170,20 @@ router.put("/:eventId/attendance", requireAuth, async (req, res) => {
   const membership = event.Group.Memberships;
 
   if (user.id === group.organizerId || membership.status === "co-host") {
-    const updatedAttendance = await attendance.update({
+    attendance.update({
       userId,
       status,
     });
 
-    let id = updatedAttendance.id;
-    eventId = updatedAttendance.eventId;
-    userId = updatedAttendance.userId;
-    status = updatedAttendance.status;
-    return res.json({
-      id,
-      eventId,
-      userId,
-      status,
-    });
+    delete attendance.dataValues.createdAt;
+
+    return res.json(
+      attendance
+      // id,
+      // eventId,
+      // userId,
+      // status,
+    );
   } else {
     res.status(403);
     return res.json({
@@ -439,7 +438,7 @@ router.get("/:eventId", async (req, res) => {
       "endDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
     ],
-    group: ["Event.id"],
+    group: ["Event.id", "Group.id"],
   });
 
   if (!event) {
@@ -649,42 +648,44 @@ router.get("/", async (req, res) => {
 
   // const Events = await Event.findAll(query);
 
+  console.log(offset);
+
   const Events = await Event.findAll({
     where,
-    limit: size,
+    // limit: size,
     offset,
-    // include: [
-    //   {
-    //     model: Attendance,
-    //     attributes: [],
-    //   },
-    //   {
-    //     model: Group,
-    //     as: "Group",
-    //     attributes: ["id", "name", "city", "state"],
-    //   },
-    //   {
-    //     model: Venue,
-    //     as: "Venue",
-    //     attributes: ["id", "city", "state"],
-    //   },
-    //   {
-    //     model: Image,
-    //     as: "images",
-    //     attributes: [],
-    //   },
-    // ],
-    // attributes: [
-    //   "id",
-    //   "groupId",
-    //   "venueId",
-    //   "name",
-    //   "type",
-    //   "startDate",
-    //   [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-    //   [sequelize.col("Images.url"), "previewImage"],
-    // ],
-    // group: ["Event.id"],
+    include: [
+      {
+        model: Attendance,
+        attributes: [],
+      },
+      {
+        model: Group,
+        as: "Group",
+        attributes: ["id", "name", "city", "state"],
+      },
+      {
+        model: Venue,
+        as: "Venue",
+        attributes: ["id", "city", "state"],
+      },
+      {
+        model: Image,
+        as: "images",
+        attributes: [],
+      },
+    ],
+    attributes: [
+      "id",
+      "groupId",
+      "venueId",
+      "name",
+      "type",
+      "startDate",
+      [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+      [sequelize.col("Images.url"), "previewImage"],
+    ],
+    group: ["Event.id"],
   });
 
   return res.json({
