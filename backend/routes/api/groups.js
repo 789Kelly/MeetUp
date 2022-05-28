@@ -594,7 +594,16 @@ router.get("/:groupId", async (req, res) => {
       [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
       [sequelize.col("Images.url"), "previewImage"],
     ],
-    group: ["Group.id", "Images.url", "Users.id"],
+    group: [
+      "Group.id",
+      "Images.url",
+      "Users.id",
+      "Users.Membership.status",
+      "Users.Membership.userId",
+      "Users.Membership.groupId",
+      "Users.Membership.createdAt",
+      "Users.Membership.updatedAt",
+    ],
   });
 
   if (!Groups) {
