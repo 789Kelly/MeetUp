@@ -557,9 +557,47 @@ router.post(
 );
 
 router.get("/:groupId", async (req, res) => {
-  const groupById = await Group.findByPk(req.params.groupId);
+  const { groupId } = req.params;
 
-  if (!groupById) {
+  const group = await Group.findByPk(groupId);
+  const organizer = group.organizerId;
+
+  const Groups = await Group.findByPk(groupId, {
+    include: [
+      {
+        model: Membership,
+        attributes: [],
+      },
+      {
+        model: Image,
+        attributes: [],
+      },
+      {
+        model: User,
+        attributes: ["id", "firstName", "lastName"],
+        where: {
+          id: organizer,
+        },
+      },
+    ],
+    attributes: [
+      "id",
+      "organizerId",
+      "name",
+      "about",
+      "type",
+      "private",
+      "city",
+      "state",
+      "createdAt",
+      "updatedAt",
+      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+      [sequelize.col("Images.url"), "previewImage"],
+    ],
+    group: ["Group.id", "Images.url"],
+  });
+
+  if (!Groups) {
     res.status(404);
     return res.json({
       message: "Group couldn't be found",
@@ -567,12 +605,8 @@ router.get("/:groupId", async (req, res) => {
     });
   }
 
-  const Organizer = await User.findByPk(groupById.organizerId);
-
-  res.status(200);
   return res.json({
-    groupById,
-    Organizer,
+    Groups,
   });
 });
 
