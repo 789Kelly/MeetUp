@@ -1,7 +1,13 @@
 const express = require("express");
 
 const { setTokenCookie, requireAuth } = require("../../utils/auth");
-const { Group, Membership, User } = require("../../db/models");
+const {
+  Group,
+  Image,
+  Membership,
+  sequelize,
+  User,
+} = require("../../db/models");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
@@ -63,15 +69,35 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
     include: [
       {
         model: User,
+        attributes: [],
         where: {
           id: user.id,
         },
+      },
+      {
+        model: Membership,
         attributes: [],
-        through: {
-          attributes: [],
-        },
+      },
+      {
+        model: Image,
+        attributes: [],
       },
     ],
+    attributes: [
+      "id",
+      "organizerId",
+      "name",
+      "about",
+      "type",
+      "private",
+      "city",
+      "state",
+      "createdAt",
+      "updatedAt",
+      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+      [sequelize.col("Images.url"), "previewImage"],
+    ],
+    group: ["Group.id"],
   });
 
   return res.json({

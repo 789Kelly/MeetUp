@@ -70,80 +70,86 @@ const validateEvent = [
   handleValidationErrors,
 ];
 
-router.put(
-  "/:groupId/memberships/:membershipId",
-  requireAuth,
-  async (req, res) => {
-    const { groupId, membershipId } = req.params;
-    const { memberId, status } = req.body;
-    const { user } = req;
+router.put("/:groupId/users/:userId", requireAuth, async (req, res) => {
+  const { groupId, userId } = req.params;
+  const { memberId, status } = req.body;
+  const { user } = req;
 
-    const group = await Group.findByPk(groupId);
-    const membership = await Membership.findByPk(membershipId);
+  const group = await Group.findByPk(groupId, {
+    include: [
+      {
+        model: User,
+        where: {
+          id: userId,
+        },
+      },
+    ],
+  });
 
-    if (!group) {
-      res.status(404);
-      return res.json({
-        message: "Group couldn't be found",
-        statusCode: 404,
-      });
-    }
-
-    if (!membership) {
-      res.status(404);
-      return res.json({
-        message: "Membership between the user and the group does not exist",
-        statusCode: 404,
-      });
-    }
-
-    if (user.id !== group.organizerId && membership.status !== "co-host") {
-      res.status(403);
-      return res.json({
-        message: "Forbidden",
-        statusCode: 403,
-      });
-    }
-
-    if (status === "co-host" && user.id !== group.organizerId) {
-      res.status(403);
-      return res.json({
-        message: "Current user must be the organizer to add a co-host",
-        statusCode: 403,
-      });
-    }
-
-    if (
-      status === "member" &&
-      user.id !== group.organizerId &&
-      membership.status !== "co-host"
-    ) {
-      res.status(400);
-      return res.json({
-        message:
-          "Current user must be the organizer or a co-host to make someone a member",
-        statusCode: 400,
-      });
-    }
-    if (status === "pending") {
-      res.status(400);
-      return res.json({
-        message: "Cannot change a membership status to pending",
-        statusCode: 400,
-      });
-    }
-
-    if (user.id === group.organizerId) {
-      membership.update({
-        groupId,
-        memberId,
-        status,
-      });
-    }
-
-    return res.json(membership);
+  if (!group) {
+    res.status(404);
+    return res.json({
+      message: "Group couldn't be found",
+      statusCode: 404,
+    });
   }
-);
+
+  // const member =
+
+  if (!membership) {
+    res.status(404);
+    return res.json({
+      message: "Membership between the user and the group does not exist",
+      statusCode: 404,
+    });
+  }
+
+  if (user.id !== group.organizerId && membership.status !== "co-host") {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
+
+  if (status === "co-host" && user.id !== group.organizerId) {
+    res.status(403);
+    return res.json({
+      message: "Current user must be the organizer to add a co-host",
+      statusCode: 403,
+    });
+  }
+
+  if (
+    status === "member" &&
+    user.id !== group.organizerId &&
+    membership.status !== "co-host"
+  ) {
+    res.status(400);
+    return res.json({
+      message:
+        "Current user must be the organizer or a co-host to make someone a member",
+      statusCode: 400,
+    });
+  }
+  if (status === "pending") {
+    res.status(400);
+    return res.json({
+      message: "Cannot change a membership status to pending",
+      statusCode: 400,
+    });
+  }
+
+  if (user.id === group.organizerId) {
+    membership.update({
+      groupId,
+      memberId,
+      status,
+    });
+  }
+
+  return res.json(membership);
+});
 
 router.delete(
   "/:groupId/memberships/:membershipId",
@@ -337,12 +343,15 @@ router.post("/:groupId/memberships", requireAuth, async (req, res) => {
     status: "pending",
   });
 
-  newMembership.dataValues.memberId = user.id;
-  delete newMembership.dataValues.userId;
-
   groupId = newMembership.groupId;
+  let memberId = newMembership.userId;
+  let status = newMembership.status;
 
-  return res.json(newMembership);
+  return res.json({
+    groupId,
+    memberId,
+    status,
+  });
 });
 
 router.get("/:groupId/events", async (req, res) => {
