@@ -599,13 +599,13 @@ router.get("/:groupId", async (req, res) => {
     ],
     group: [
       "Group.id",
-      // "Images.url",
-      // "Users.id",
-      // "Users.Membership.status",
-      // "Users.Membership.userId",
-      // "Users.Membership.groupId",
-      // "Users.Membership.createdAt",
-      // "Users.Membership.updatedAt",
+      "Images.url",
+      "Users.id",
+      "Users.Membership.status",
+      "Users.Membership.userId",
+      "Users.Membership.groupId",
+      "Users.Membership.createdAt",
+      "Users.Membership.updatedAt",
     ],
   });
 
