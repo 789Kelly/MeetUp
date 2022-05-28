@@ -27,21 +27,21 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         unique: true,
         validate: {
-          len: [0, 30],
+          len: [1, 60],
         },
       },
       about: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 256],
+          len: [50, 256],
         },
       },
       type: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [1, 30],
         },
       },
       private: {
@@ -53,14 +53,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [1, 30],
         },
       },
       state: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [1, 30],
         },
       },
     },

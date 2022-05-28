@@ -18,25 +18,25 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [1, 30],
         },
       },
       city: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [1, 30],
         },
       },
       state: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [1, 30],
         },
       },
-      lat: DataTypes.DECIMAL,
-      lng: DataTypes.DECIMAL,
+      lat: DataTypes.FLOAT,
+      lng: DataTypes.FLOAT,
       groupId: DataTypes.INTEGER,
     },
     {

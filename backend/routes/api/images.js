@@ -4,7 +4,7 @@ const router = express.Router();
 const { Event, Group, Image, Membership } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 
-router.delete("/images/:imageId", requireAuth, async (req, res) => {
+router.delete("/:imageId", requireAuth, async (req, res) => {
   const { user } = req;
   const { imageId } = req.params;
 
@@ -12,13 +12,12 @@ router.delete("/images/:imageId", requireAuth, async (req, res) => {
     include: [
       {
         model: Group,
+      },
+      {
         model: Event,
       },
     ],
   });
-
-  let group = image.Groups[0];
-  let event = image.Events[0];
 
   if (!image) {
     res.status(404);
@@ -28,8 +27,11 @@ router.delete("/images/:imageId", requireAuth, async (req, res) => {
     });
   }
 
-  if (!image.Events) {
-    const membership = await Membership.findAll({
+  let group = image.Group;
+  let event = image.Event;
+
+  if (!event) {
+    const membership = await Membership.findOne({
       where: {
         userId: user.id,
         groupId: group.id,
@@ -51,18 +53,20 @@ router.delete("/images/:imageId", requireAuth, async (req, res) => {
     }
   }
 
-  if (!image.Groups) {
+  if (!group) {
     group = await Group.findByPk(event.groupId, {
       include: [
         {
           model: Membership,
+          where: {
+            userId: user.id,
+          },
         },
       ],
     });
-    if (
-      user.id === group.organizerId ||
-      group.Memberships[0].status === "co-host"
-    ) {
+
+    const membership = group.Memberships[0];
+    if (user.id === group.organizerId || membership.status === "co-host") {
       await image.destroy();
       res.status(200);
       return res.json({

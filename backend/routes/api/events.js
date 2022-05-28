@@ -14,6 +14,47 @@ const {
 } = require("../../db/models");
 const { Op } = require("sequelize");
 const { requireAuth } = require("../../utils/auth");
+const { check } = require("express-validator");
+const { handleValidationErrors } = require("../../utils/validation");
+
+const validateEvent = [
+  check("venueId")
+    .exists({ checkFalsy: true })
+    .withMessage("Venue is required"),
+  check("name")
+    .isLength({ min: 5 })
+    .withMessage("Name must be at least 5 characters"),
+  check("type")
+    .isIn(["Online", "In person"])
+    .withMessage("Type must be Online or In person"),
+  check("capacity").isInt().withMessage("Capacity must be an integer"),
+  check("price").isFloat({ min: 0.1 }).withMessage("Price is invalid"),
+  check("description")
+    .exists({ checkFalsy: true })
+    .withMessage("Description is required"),
+  check("startDate").isAfter().withMessage("Start date must be in the future"),
+  check("endDate")
+    .isAfter("startDate")
+    .withMessage("End date is less than start date"),
+  handleValidationErrors,
+];
+
+const validateQuery = [
+  check("page")
+    .isInt({ min: 0 })
+    .withMessage("Page must be greater than or equal to 0"),
+  check("size")
+    .isInt({ min: 0 })
+    .withMessage("Size must be greater than or equal to 0"),
+  check("name").isString().withMessage("Name must be a string"),
+  check("type")
+    .isIn(["Online", "In person"])
+    .withMessage("Type must be 'Online' or 'In Person'"),
+  check("startDate")
+    .isDate()
+    .withMessage("Start date must be a valid datetime"),
+  handleValidationErrors,
+];
 
 router.delete(
   "/:eventId/attendances/:attendanceId",
@@ -241,13 +282,18 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
 
 router.post("/:eventId/images", requireAuth, async (req, res) => {
   const { user } = req;
-  const { eventId } = req.params;
-  const { url } = req.body;
+  let { eventId } = req.params;
+  let { url } = req.body;
+
+  eventId = parseInt(eventId);
 
   const event = await Event.findByPk(eventId, {
     include: [
       {
-        model: Group,
+        model: Attendance,
+        where: {
+          userId: user.id,
+        },
       },
     ],
   });
@@ -260,22 +306,23 @@ router.post("/:eventId/images", requireAuth, async (req, res) => {
     });
   }
 
-  const membership = await Membership.findAll({
-    where: {
-      userId: user.id,
-      groupId: event.Groups[0].id,
-    },
-  });
+  const attendance = event.Attendances[0];
 
-  if (
-    user.id === event.Groups[0].organizerId ||
-    membership.status === "co-host"
-  ) {
+  if (attendance.status === "member" || attendance.status === "co-host") {
     const newImage = await Image.create({
       eventId,
       url,
     });
-    return res.json(newImage);
+
+    let id = newImage.id;
+    eventId = newImage.eventId;
+    url = newImage.url;
+
+    return res.json({
+      id,
+      eventId,
+      url,
+    });
   } else {
     res.status(403);
     return res.json({
@@ -403,72 +450,85 @@ router.get("/:eventId", async (req, res) => {
   res.json(event);
 });
 
-// router.put("/:eventId", requireAuth, async (req, res) => {
-//   const { user } = req;
-//   const {
-//     venueId,
-//     name,
-//     type,
-//     capacity,
-//     price,
-//     description,
-//     startDate,
-//     endDate,
-//   } = req.body;
-//   const { eventId } = req.params;
+router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
+  const { user } = req;
+  const {
+    venueId,
+    name,
+    type,
+    capacity,
+    price,
+    description,
+    startDate,
+    endDate,
+  } = req.body;
+  const { eventId } = req.params;
 
-//   const venue = await Venue.findByPk(venueId);
+  const venue = await Venue.findByPk(venueId);
 
-//   const event = await Event.findByPk(eventId, {
-//     attributes: ["id", "groupId", "venueId", "name", "type", "capacity", "price", "description", "startDate", "endDate"],
-//     include: [
-//       {
-//         model: Group,
-//         include: [
-//           {
-//           model: Membership,
-//           where: {
-//             userId: user.id,
-//           },
-//           }
-//         ]
-//       },
-//     ],
-//   });
+  const event = await Event.findByPk(eventId, {
+    attributes: [
+      "id",
+      "groupId",
+      "venueId",
+      "name",
+      "type",
+      "capacity",
+      "price",
+      "description",
+      "startDate",
+      "endDate",
+    ],
+    include: [
+      {
+        model: Group,
+        as: "Group",
+        include: [
+          {
+            model: Membership,
+            where: {
+              userId: user.id,
+            },
+          },
+        ],
+      },
+    ],
+  });
 
-//   if (!venue) {
-//     res.status(404);
-//     return res.json({
-//       message: "Venue couldn't be found",
-//       statusCode: 404,
-//   }
+  if (!venue) {
+    res.status(404);
+    return res.json({
+      message: "Venue couldn't be found",
+      statusCode: 404,
+    });
+  }
 
-//   if (!event) {
-//         res.status(404);
-//     return res.json({
-//       message: "Event couldn't be found",
-//       statusCode: 404,
-//   }
+  if (!event) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
 
-//   const group = event.Groups[0];
-//   const membership = event.Groups[0].Memberships[0];
+  const group = event.Group;
+  const membership = group.Memberships[0];
 
-//   if (user.id === group.organizerId || membership.status === "co-host") {
-//     await event.update({
-//       groupId,
-//       venueId,
-//       name,
-//       type,
-//       capacity,
-//       price,
-//       description,
-//       startDate,
-//       endDate,
-//     });
-//   }
+  if (user.id === group.organizerId || membership.status === "co-host") {
+    await event.update({
+      venueId,
+      name,
+      type,
+      capacity,
+      price,
+      description,
+      startDate,
+      endDate,
+    });
+  }
 
-//   return res.json(event);
-// });
+  return res.json(event);
+});
 
 router.delete("/:eventId", requireAuth, async (req, res) => {
   const { eventId } = req.params;
@@ -516,66 +576,111 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", validateQuery, async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
 
-  let where = {};
+  let query = {
+    where: {},
+    include: [],
+    attributes: [],
+    group: [],
+  };
 
   if (name && name !== "") {
-    where.name = name;
+    query.where.name = name;
   }
 
-  if (type && type !== "" && (type === "Online" || type === "In Person")) {
-    where.type = type;
-  }
-
-  if (type !== "Online" || type !== "In Person") {
-    res.statusCode = 400;
-    return res.json({
-      message: "Validation Error",
-      statusCode: 400,
-      errors: {
-        type: "Type must be 'Online' or 'In Person'",
-      },
-    });
+  if (type === "Online" || type === "In Person") {
+    query.where.type = type;
   }
 
   if (startDate && startDate !== "") {
-    where.startDate = startDate;
+    query.where.startDate = startDate;
   }
 
   page = parseInt(page);
   size = parseInt(size);
 
-  if (Number.isNaN(page) || page < 0 || page > 10) {
-    page = 0;
-    res.status = 400;
-    return res.json({
-      message: "Validation Error",
-      statusCode: 400,
-      errors: {
-        page: "Page must be greater than or equal to 0",
-      },
-    });
-  }
+  if (Number.isNaN(page) || page < 0 || page > 10) page = 0;
 
-  if (Number.isNaN(size) || size < 0 || size > 20) {
-    size = 20;
-    res.status = 400;
-    return res.json({
-      message: "Validation Error",
-      statusCode: 400,
-      errors: {
-        size: "Size must be greater than or equal to 0",
-      },
-    });
-  }
+  if (Number.isNaN(size) || size < 0 || size > 20) size = 20;
 
-  const Events = await Event.findAll({
-    where,
-    limit: size,
-    offset: size * (page - 1),
-  });
+  query.limit = size;
+  query.offset = size * (page - 1);
+  query.include.push(
+    {
+      model: Attendance,
+      attributes: [],
+    },
+    {
+      model: Group,
+      as: "Group",
+      attributes: ["id", "name", "city", "state"],
+    },
+    {
+      model: Venue,
+      as: "Venue",
+      attributes: ["id", "city", "state"],
+    },
+    {
+      model: Image,
+      as: "images",
+      attributes: [],
+    }
+  );
+
+  query.attributes.push(
+    "id",
+    "groupId",
+    "venueId",
+    "name",
+    "type",
+    "startDate",
+    [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+    [sequelize.col("Images.url"), "previewImage"]
+  );
+
+  query.group.push("Event.id");
+
+  const Events = await Event.findAll(query);
+
+  // const Events = await Event.findAll({
+  // where,
+  // limit: size,
+  // offset: size * (page - 1),
+  // include: [
+  //   {
+  //     model: Attendance,
+  //     attributes: [],
+  //   },
+  //   {
+  //     model: Group,
+  //     as: "Group",
+  //     attributes: ["id", "name", "city", "state"],
+  //   },
+  //   {
+  //     model: Venue,
+  //     as: "Venue",
+  //     attributes: ["id", "city", "state"],
+  //   },
+  //   {
+  //     model: Image,
+  //     as: "images",
+  //     attributes: [],
+  //   },
+  // ],
+  // attributes: [
+  //   "id",
+  //   "groupId",
+  //   "venueId",
+  //   "name",
+  //   "type",
+  //   "startDate",
+  //   [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+  //   [sequelize.col("Images.url"), "previewImage"],
+  // ],
+  // group: ["Event.id"],
+  // });
 
   return res.json({
     Events,

@@ -21,10 +21,10 @@ module.exports = {
         type: Sequelize.STRING(30),
       },
       lat: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.FLOAT,
       },
       lng: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.FLOAT,
       },
       groupId: {
         references: {

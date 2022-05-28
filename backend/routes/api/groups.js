@@ -19,7 +19,7 @@ const { handleValidationErrors } = require("../../utils/validation");
 
 const validateGroup = [
   check("name")
-    .isLength({ max: 60 })
+    .isLength({ min: 1, max: 60 })
     .withMessage("Name must be 60 characters or less"),
   check("about")
     .isLength({ min: 50 })
@@ -27,14 +27,46 @@ const validateGroup = [
   check("type")
     .isIn(["Online", "In person"])
     .withMessage("Type must be Online or In person"),
-  check("private")
-    .isLength({ min: 4 })
-    .withMessage("Please provide a username with at least 4 characters."),
-  check("username").not().isEmail().withMessage("Username cannot be an email."),
-  check("password")
+  check("private").isBoolean().withMessage("Private must be a boolean"),
+  check("city").exists({ checkFalsy: true }).withMessage("City is required"),
+  check("state").exists({ checkFalsy: true }).withMessage("State is required"),
+  handleValidationErrors,
+];
+
+const validateVenue = [
+  check("address")
     .exists({ checkFalsy: true })
-    .isLength({ min: 6 })
-    .withMessage("Password must be 6 characters or more."),
+    .withMessage("Street address is required"),
+  check("city").exists({ checkFalsy: true }).withMessage("City is required"),
+  check("state").exists({ checkFalsy: true }).withMessage("State is required"),
+  check("lat")
+    .isFloat({ min: -90.0, max: 90.0 })
+    .withMessage("Latitude is not valid"),
+  check("lng")
+    .isFloat({ min: -180.0, max: 180.0 })
+    .withMessage("Longitude is not valid"),
+  handleValidationErrors,
+];
+
+const validateEvent = [
+  check("venueId")
+    .exists({ checkFalsy: true })
+    .withMessage("Venue is required"),
+  check("name")
+    .isLength({ min: 5 })
+    .withMessage("Name must be at least 5 characters"),
+  check("type")
+    .isIn(["Online", "In person"])
+    .withMessage("Type must be Online or In person"),
+  check("capacity").isInt().withMessage("Capacity must be an integer"),
+  check("price").isFloat({ min: 0.1 }).withMessage("Price is invalid"),
+  check("description")
+    .exists({ checkFalsy: true })
+    .withMessage("Description is required"),
+  check("startDate").isAfter().withMessage("Start date must be in the future"),
+  check("endDate")
+    .isAfter("startDate")
+    .withMessage("End date is less than start date"),
   handleValidationErrors,
 ];
 
@@ -369,141 +401,151 @@ router.get("/:groupId/events", async (req, res) => {
   });
 });
 
-router.post("/:groupId/events", requireAuth, async (req, res) => {
-  const { user } = req;
-  let {
-    venueId,
-    name,
-    type,
-    capacity,
-    price,
-    description,
-    startDate,
-    endDate,
-  } = req.body;
-  let { groupId } = req.params;
+router.post(
+  "/:groupId/events",
+  requireAuth,
+  validateEvent,
+  async (req, res) => {
+    const { user } = req;
+    let {
+      venueId,
+      name,
+      type,
+      capacity,
+      price,
+      description,
+      startDate,
+      endDate,
+    } = req.body;
+    let { groupId } = req.params;
 
-  groupId = parseInt(groupId);
-  const venue = await Venue.findByPk(venueId);
+    groupId = parseInt(groupId);
+    const venue = await Venue.findByPk(venueId);
 
-  if (!venue) {
-    res.status(404);
-    return res.json({
-      message: "Venue couldn't be found",
-      statusCode: 404,
-    });
-  }
+    if (!venue) {
+      res.status(404);
+      return res.json({
+        message: "Venue couldn't be found",
+        statusCode: 404,
+      });
+    }
 
-  const group = await Group.findByPk(groupId, {
-    include: [
-      {
-        model: Membership,
-        where: {
-          userId: user.id,
+    const group = await Group.findByPk(groupId, {
+      include: [
+        {
+          model: Membership,
+          where: {
+            userId: user.id,
+          },
         },
-      },
-    ],
-  });
-
-  let membership = group.Memberships[0];
-  let newEvent = {};
-
-  if (user.id === group.organizerId || membership.status === "co-host") {
-    newEvent = await Event.create({
-      groupId,
-      venueId,
-      name,
-      type,
-      capacity,
-      price,
-      description,
-      startDate,
-      endDate,
+      ],
     });
 
-    const id = newEvent.id;
-    groupId = newEvent.groupId;
-    venueId = newEvent.venueId;
-    name = newEvent.name;
-    type = newEvent.type;
-    capacity = newEvent.capacity;
-    price = newEvent.price;
-    description = newEvent.description;
-    startDate = newEvent.startDate;
-    endDate = newEvent.endDate;
-    return res.json({
-      id,
-      groupId,
-      venueId,
-      name,
-      type,
-      capacity,
-      price,
-      description,
-      startDate,
-      endDate,
-    });
-  } else {
-    res.status(403);
-    return res.json({
-      message: "Forbidden",
-      statusCode: 403,
-    });
+    let membership = group.Memberships[0];
+    let newEvent = {};
+
+    if (user.id === group.organizerId || membership.status === "co-host") {
+      newEvent = await Event.create({
+        groupId,
+        venueId,
+        name,
+        type,
+        capacity,
+        price,
+        description,
+        startDate,
+        endDate,
+      });
+
+      const id = newEvent.id;
+      groupId = newEvent.groupId;
+      venueId = newEvent.venueId;
+      name = newEvent.name;
+      type = newEvent.type;
+      capacity = newEvent.capacity;
+      price = newEvent.price;
+      description = newEvent.description;
+      startDate = newEvent.startDate;
+      endDate = newEvent.endDate;
+      return res.json({
+        id,
+        groupId,
+        venueId,
+        name,
+        type,
+        capacity,
+        price,
+        description,
+        startDate,
+        endDate,
+      });
+    } else {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
   }
-});
+);
 
-router.post("/:groupId/venues", requireAuth, async (req, res) => {
-  const { user } = req;
-  let { address, city, state, lat, lng } = req.body;
-  let { groupId } = req.params;
+router.post(
+  "/:groupId/venues",
+  requireAuth,
+  validateVenue,
+  async (req, res) => {
+    const { user } = req;
+    let { address, city, state, lat, lng } = req.body;
+    let { groupId } = req.params;
 
-  const group = await Group.findByPk(groupId);
+    const group = await Group.findByPk(groupId);
 
-  if (!group) {
-    res.status(404);
-    return res.json({
-      message: "Group couldn't be found",
-      statusCode: 404,
-    });
+    if (!group) {
+      res.status(404);
+      return res.json({
+        message: "Group couldn't be found",
+        statusCode: 404,
+      });
+    }
+
+    const membership = await Membership.findByPk(groupId);
+
+    if (user.id === group.organizerId || membership.status === "co-host") {
+      const newVenue = await Venue.create({
+        groupId,
+        address,
+        city,
+        state,
+        lat,
+        lng,
+      });
+
+      let id = newVenue.id;
+      groupId = newVenue.groupId;
+      address = newVenue.address;
+      city = newVenue.city;
+      state = newVenue.state;
+      lat = newVenue.lat;
+      lng = newVenue.lng;
+
+      return res.json({
+        id,
+        groupId,
+        address,
+        city,
+        state,
+        lat,
+        lng,
+      });
+    } else {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
   }
-
-  const membership = await Membership.findByPk(groupId);
-
-  if (user.id === group.organizerId || membership.status === "co-host") {
-    const newVenue = await Venue.create({
-      groupId,
-      address,
-      city,
-      state,
-      lat,
-      lng,
-    });
-
-    let id = newVenue.id;
-    groupId = newVenue.groupId;
-    address = newVenue.address;
-    city = newVenue.city;
-    state = newVenue.state;
-    lat = newVenue.lat;
-    lng = newVenue.lng;
-
-    return res.json({
-      id,
-      groupId,
-      address,
-      city,
-      state,
-      lat,
-      lng,
-    });
-  } else {
-    res.status(403);
-    return res.json({
-      message: "Forbidden",
-      statusCode: 403,
-    });
-  }
-});
+);
 
 router.get("/:groupId", async (req, res) => {
   const groupById = await Group.findByPk(req.params.groupId);
@@ -525,7 +567,7 @@ router.get("/:groupId", async (req, res) => {
   });
 });
 
-router.put("/:groupId", requireAuth, async (req, res) => {
+router.put("/:groupId", requireAuth, validateGroup, async (req, res) => {
   const { groupId } = req.params;
   const { name, about, type, private, city, state } = req.body;
   const { user } = req;
@@ -608,12 +650,13 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.post("/", requireAuth, async (req, res) => {
-  const { name, organizerId, about, type, private, city, state } = req.body;
+router.post("/", requireAuth, validateGroup, async (req, res) => {
+  const { name, about, type, private, city, state } = req.body;
+  const { user } = req;
 
   const newGroup = await Group.create({
     name,
-    organizerId,
+    organizerId: user.id,
     about,
     type,
     private,

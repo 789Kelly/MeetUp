@@ -29,21 +29,21 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [5, 256],
         },
       },
       description: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 256],
+          len: [1, 256],
         },
       },
       type: {
         allowNull: false,
         type: DataTypes.STRING,
         validate: {
-          len: [0, 30],
+          len: [1, 30],
         },
       },
       capacity: {
@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       price: {
         allowNull: false,
-        type: DataTypes.DECIMAL,
+        type: DataTypes.FLOAT,
       },
       startDate: {
         allowNull: false,

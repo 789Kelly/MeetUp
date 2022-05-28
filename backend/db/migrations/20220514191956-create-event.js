@@ -24,7 +24,7 @@ module.exports = {
       },
       name: {
         allowNull: false,
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(256),
       },
       description: {
         allowNull: false,
@@ -39,7 +39,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       price: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.FLOAT,
       },
       startDate: {
         allowNull: false,

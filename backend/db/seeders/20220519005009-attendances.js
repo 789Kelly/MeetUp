@@ -14,7 +14,7 @@ const attendances = [
     eventId: 1,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 3,
     eventId: 1,
   },
@@ -39,7 +39,7 @@ const attendances = [
     eventId: 2,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 4,
     eventId: 2,
   },
@@ -64,7 +64,7 @@ const attendances = [
     eventId: 3,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 5,
     eventId: 3,
   },
@@ -89,7 +89,7 @@ const attendances = [
     eventId: 4,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 1,
     eventId: 4,
   },
@@ -114,7 +114,7 @@ const attendances = [
     eventId: 5,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 2,
     eventId: 5,
   },
@@ -139,7 +139,7 @@ const attendances = [
     eventId: 6,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 3,
     eventId: 6,
   },
@@ -164,7 +164,7 @@ const attendances = [
     eventId: 7,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 4,
     eventId: 7,
   },
@@ -189,7 +189,7 @@ const attendances = [
     eventId: 8,
   },
   {
-    status: "member",
+    status: "co-host",
     userId: 5,
     eventId: 8,
   },
