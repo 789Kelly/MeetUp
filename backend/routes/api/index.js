@@ -10,13 +10,13 @@ router.use(sessionRouter);
 
 router.use(usersRouter);
 
-router.use(eventsRouter);
+router.use("/events", eventsRouter);
 
-router.use(groupsRouter);
+router.use("/groups", groupsRouter);
 
-router.use(imagesRouter);
+router.use("/images", imagesRouter);
 
-router.use(venuesRouter);
+router.use("/venues", venuesRouter);
 
 router.post("/test", function (req, res) {
   res.json({ requestBody: req.body });
