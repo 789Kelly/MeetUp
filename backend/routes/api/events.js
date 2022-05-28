@@ -684,7 +684,7 @@ router.get("/", async (req, res) => {
       "type",
       "startDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-      [sequelize.col("Images.url"), "previewImage"],
+      [sequelize.col("images.url"), "previewImage"],
     ],
     group: ["Event.id"],
   });
