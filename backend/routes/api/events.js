@@ -362,6 +362,7 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
   // return res.json(group);
 
   const membership = group.Memberships[0];
+  //not a member so it's null and cannot read
   let Attendees;
 
   if (group.organizerId === user.id || membership.status === "co-host") {
