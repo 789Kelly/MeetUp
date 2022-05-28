@@ -438,7 +438,7 @@ router.get("/:eventId", async (req, res) => {
       "endDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
     ],
-    group: ["Event.id", "Group.id"],
+    group: ["Event.id", "Group.id", "Venue.id"],
   });
 
   if (!event) {
