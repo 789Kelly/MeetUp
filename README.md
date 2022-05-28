@@ -1003,7 +1003,7 @@ Returns all the events of a group specified by its id
 
 Returns the details of an event specified by its id.
 
-- Require Authentication: false
+- Require Authentication: true
 - Request
 
   - Method: GET
