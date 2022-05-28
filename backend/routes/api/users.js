@@ -102,6 +102,7 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
       "Images.url",
       "Users.Membership.status",
       "Users.Membership.userId",
+      "Users.Membership.groupId",
     ],
   });
 
