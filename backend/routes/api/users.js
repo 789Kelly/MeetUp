@@ -104,6 +104,7 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
       "Users.Membership.userId",
       "Users.Membership.groupId",
       "Users.Membership.createdAt",
+      "Users.Membership.updatedAt",
     ],
   });
 
