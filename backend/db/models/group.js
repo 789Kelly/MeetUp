@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Group.belongsToMany(models.User, {
+        as: "Organizer",
         through: models.Membership,
         foreignKey: "groupId",
         otherKey: "userId",
@@ -16,7 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       Group.hasMany(models.Event, { foreignKey: "groupId" });
       Group.hasMany(models.Venue, { foreignKey: "groupId" });
       Group.hasMany(models.Image, { foreignKey: "groupId" });
-      Group.belongsTo(models.User, { foreignKey: "organizerId" });
+      Group.belongsTo(models.User, {
+        foreignKey: "organizerId",
+      });
       Group.hasMany(models.Membership, { foreignKey: "groupId" });
     }
   }

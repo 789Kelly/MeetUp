@@ -65,6 +65,7 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
     include: [
       {
         model: User,
+        as: "Organizer",
         attributes: [],
         where: {
           id: user.id,
@@ -96,11 +97,11 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
     group: [
       "Group.id",
       "Images.url",
-      "Users.Membership.status",
-      "Users.Membership.userId",
-      "Users.Membership.groupId",
-      "Users.Membership.createdAt",
-      "Users.Membership.updatedAt",
+      "Organizer.Membership.status",
+      "Organizer.Membership.userId",
+      "Organizer.Membership.groupId",
+      "Organizer.Membership.createdAt",
+      "Organizer.Membership.updatedAt",
     ],
   });
 

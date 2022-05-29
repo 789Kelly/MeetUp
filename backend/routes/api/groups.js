@@ -556,6 +556,15 @@ router.get("/:groupId", async (req, res) => {
   let { groupId } = req.params;
 
   const group = await Group.findByPk(groupId);
+
+  if (!group) {
+    res.status(404);
+    return res.json({
+      message: "Group couldn't be found",
+      statusCode: 404,
+    });
+  }
+
   const organizer = group.organizerId;
 
   const Groups = await Group.findByPk(groupId, {
@@ -570,6 +579,7 @@ router.get("/:groupId", async (req, res) => {
       },
       {
         model: User,
+        as: "Organizer",
         attributes: ["id", "firstName", "lastName"],
         where: {
           id: organizer,
@@ -596,22 +606,14 @@ router.get("/:groupId", async (req, res) => {
     group: [
       "Group.id",
       "Images.url",
-      "Users.id",
-      "Users.Membership.status",
-      "Users.Membership.userId",
-      "Users.Membership.groupId",
-      "Users.Membership.createdAt",
-      "Users.Membership.updatedAt",
+      "Organizer.id",
+      "Organizer.Membership.status",
+      "Organizer.Membership.userId",
+      "Organizer.Membership.groupId",
+      "Organizer.Membership.createdAt",
+      "Organizer.Membership.updatedAt",
     ],
   });
-
-  if (!Groups) {
-    res.status(404);
-    return res.json({
-      message: "Group couldn't be found",
-      statusCode: 404,
-    });
-  }
 
   // let id = Groups.id;
   // let organizerId = Groups.organizerId;
