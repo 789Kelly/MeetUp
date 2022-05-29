@@ -405,6 +405,9 @@ router.get("/:groupId/events", async (req, res) => {
       "Group.name",
       "Group.city",
       "Group.state",
+      "Venue.id",
+      "Venue.city",
+      "Venue.state",
     ],
   });
 
