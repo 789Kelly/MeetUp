@@ -699,7 +699,14 @@ router.get("/", async (req, res) => {
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
       [sequelize.col("images.url"), "previewImage"],
     ],
-    group: ["Event.id", "images.url"],
+    group: [
+      "Event.id",
+      "images.url",
+      "Group.id",
+      "Group.name",
+      "Group.city",
+      "Group.state",
+    ],
   });
 
   return res.json({
