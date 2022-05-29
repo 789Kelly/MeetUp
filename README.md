@@ -1049,7 +1049,7 @@ Returns the details of an event specified by its id.
     }
     ```
 
-- Error response: Couldn't find a Event with the specified id
+- Error response: Couldn't find an Event with the specified id
 
   - Status Code: 404
   - Headers:
