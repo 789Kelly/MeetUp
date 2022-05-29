@@ -300,16 +300,7 @@ router.post("/:eventId/images", requireAuth, async (req, res) => {
 
   eventId = parseInt(eventId);
 
-  const event = await Event.findByPk(eventId, {
-    include: [
-      {
-        model: Attendance,
-        where: {
-          userId: user.id,
-        },
-      },
-    ],
-  });
+  const event = await Event.findByPk(eventId);
 
   if (!event) {
     res.status(404);
@@ -319,7 +310,20 @@ router.post("/:eventId/images", requireAuth, async (req, res) => {
     });
   }
 
-  const attendance = event.Attendances[0];
+  const attendance = await Attendance.findOne({
+    where: {
+      eventId: event.id,
+      userId: user.id,
+    },
+  });
+
+  if (!attendance) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 
   if (attendance.status === "member" || attendance.status === "co-host") {
     const newImage = await Image.create({

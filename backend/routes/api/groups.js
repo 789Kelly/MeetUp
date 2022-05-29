@@ -201,14 +201,7 @@ router.post("/:groupId/images", requireAuth, async (req, res) => {
     });
   }
 
-  const membership = await Membership.findAll({
-    where: {
-      userId: user.id,
-      groupId,
-    },
-  });
-
-  if (user.id === group.organizerId || membership.status === "co-host") {
+  if (user.id === group.organizerId) {
     const newImage = await Image.create({
       groupId,
       url,
