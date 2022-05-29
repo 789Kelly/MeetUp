@@ -541,6 +541,7 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
     include: [
       {
         model: Group,
+        as: "Group",
         include: [
           {
             model: Membership,
