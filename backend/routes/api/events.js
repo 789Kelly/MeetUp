@@ -340,6 +340,14 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
 
   const event = await Event.findByPk(eventId);
 
+  if (!event) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
+
   const group = await Group.findByPk(event.groupId, {
     include: [
       {
@@ -350,14 +358,6 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
       },
     ],
   });
-
-  if (!event) {
-    res.status(404);
-    return res.json({
-      message: "Event couldn't be found",
-      statusCode: 404,
-    });
-  }
 
   // return res.json(group);
 
@@ -389,7 +389,11 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
           attributes: ["status"],
           where: {
             eventId: event.id,
-            [Op.or]: [{ status: "member" }, { status: "waitlist" }],
+            [Op.or]: [
+              { status: "member" },
+              { status: "waitlist" },
+              { status: "co-host" },
+            ],
           },
         },
       ],
