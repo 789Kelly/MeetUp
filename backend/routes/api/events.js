@@ -194,16 +194,12 @@ router.put("/:eventId/attendance", requireAuth, async (req, res) => {
 });
 
 router.post("/:eventId/attendances", requireAuth, async (req, res) => {
-  const { eventId } = req.params;
+  let { eventId } = req.params;
   const { user } = req;
   //find all where event id and user id - if exists then throw error
-  const event = await Event.findByPk(eventId, {
-    include: [
-      {
-        model: Attendance,
-      },
-    ],
-  });
+
+  eventId = parseInt(eventId);
+  const event = await Event.findByPk(eventId);
 
   if (!event) {
     res.status(404);
@@ -233,7 +229,7 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
     where: {
       eventId,
       userId: user.id,
-      status: "member",
+      [Op.or]: [{ status: "member" }, { status: "co-host" }],
     },
   });
 
@@ -256,10 +252,25 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
     ],
   });
 
-  const membership = group.Memberships;
+  if (!group) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
+  let membership = group.Memberships[0];
+
+  if (!membership) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 
   if (membership.status === "member" || membership.status === "co-host") {
-    const newAttendance = await Attendance.create({
+    let newAttendance = await Attendance.create({
       eventId,
       userId: user.id,
       status: "pending",
