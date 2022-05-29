@@ -564,7 +564,20 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
     });
   }
 
-  if (user.id === group.organizerId || membership.status === "co-host") {
+  if (user.id === group.organizerId) {
+    await event.destroy();
+
+    return res.json({
+      message: "Successfully deleted",
+      statusCode: 200,
+    });
+  } else if (!membership.status) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  } else if (membership.status === "co-host") {
     await event.destroy();
 
     return res.json({
