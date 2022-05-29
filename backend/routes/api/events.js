@@ -401,57 +401,57 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
   });
 });
 
-// router.get("/:eventId", async (req, res) => {
-//   const { eventId } = req.params;
+router.get("/:eventId", async (req, res) => {
+  const { eventId } = req.params;
 
-//   const event = await Event.findByPk(eventId, {
-//     include: [
-//       {
-//         model: Attendance,
-//         attributes: [],
-//       },
-//       {
-//         model: Group,
-//         as: "Group",
-//         attributes: ["id", "name", "private", "city", "state"],
-//       },
-//       {
-//         model: Venue,
-//         as: "Venue",
-//         attributes: ["id", "address", "city", "state", "lat", "lng"],
-//       },
-//       {
-//         model: Image,
-//         as: "images",
-//         attributes: ["url"],
-//       },
-//     ],
-//     attributes: [
-//       "id",
-//       "groupId",
-//       "venueId",
-//       "name",
-//       "description",
-//       "type",
-//       "capacity",
-//       "price",
-//       "startDate",
-//       "endDate",
-//       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-//     ],
-//     group: ["Event.id", "Group.id", "Venue.id", "images.id"],
-//   });
+  const event = await Event.findByPk(eventId, {
+    include: [
+      {
+        model: Attendance,
+        attributes: [],
+      },
+      {
+        model: Group,
+        as: "Group",
+        attributes: ["id", "name", "private", "city", "state"],
+      },
+      {
+        model: Venue,
+        as: "Venue",
+        attributes: ["id", "address", "city", "state", "lat", "lng"],
+      },
+      {
+        model: Image,
+        as: "images",
+        attributes: ["url"],
+      },
+    ],
+    attributes: [
+      "id",
+      "groupId",
+      "venueId",
+      "name",
+      "description",
+      "type",
+      "capacity",
+      "price",
+      "startDate",
+      "endDate",
+      [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+    ],
+    group: ["Event.id", "Group.id", "Venue.id", "images.id"],
+  });
 
-//   if (!event) {
-//     res.status(404);
-//     return res.json({
-//       message: "Event couldn't be found",
-//       statusCode: 404,
-//     });
-//   }
+  if (!event) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
 
-//   res.json(event);
-// });
+  res.json(event);
+});
 
 router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
   const { user } = req;
