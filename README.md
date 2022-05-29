@@ -405,7 +405,7 @@ Creates and returns a new group.
 
     ```json
     {
-      "message": "Validation Error",
+      "message": "Validation error",
       "statusCode": 400,
       "errors": {
         "name": "Name must be 60 characters or less",
@@ -474,7 +474,7 @@ Updates and returns an existing group.
 
     ```json
     {
-      "message": "Validation Error",
+      "message": "Validation error",
       "statusCode": 400,
       "errors": {
         "name": "Name must be 60 characters or less",
@@ -1961,7 +1961,7 @@ Return events filtered by query parameters.
 
     ```json
     {
-      "message": "Validation Error",
+      "message": "Validation error",
       "statusCode": 400,
       "errors": {
         "page": "Page must be greater than or equal to 0",

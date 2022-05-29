@@ -513,6 +513,7 @@ router.post(
     let { address, city, state, lat, lng } = req.body;
     let { groupId } = req.params;
 
+    groupId = parseInt(groupId);
     const group = await Group.findByPk(groupId);
 
     if (!group) {
@@ -523,7 +524,20 @@ router.post(
       });
     }
 
-    const membership = await Membership.findByPk(groupId);
+    const membership = await Membership.findOne({
+      where: {
+        userId: user.id,
+        groupId: group.id,
+      },
+    });
+
+    if (!membership) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
 
     if (user.id === group.organizerId || membership.status === "co-host") {
       const newVenue = await Venue.create({
