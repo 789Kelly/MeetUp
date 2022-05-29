@@ -456,11 +456,26 @@ router.post(
       ],
     });
 
+    if (!group) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
     let membership = group.Memberships[0];
-    let newEvent = {};
+
+    if (!membership) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
 
     if (user.id === group.organizerId || membership.status === "co-host") {
-      newEvent = await Event.create({
+      let newEvent = await Event.create({
         groupId,
         venueId,
         name,
