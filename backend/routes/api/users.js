@@ -11,6 +11,18 @@ const {
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
+const validateSignup2 = [
+  check("email").custom((value) => {
+    const checkEmail = await User.findOne({ where: { email: value } });
+  if (checkEmail) {
+    let error = new Error("User already exists");
+    error.status = 403;
+    error.errors = ["User with that email already exists"];
+    throw error;
+  }
+  })
+]
+
 const validateSignup = [
   check("firstName")
     .exists({ checkFalsy: true })
@@ -20,7 +32,6 @@ const validateSignup = [
     .withMessage("Last Name is required"),
   check("email")
     .exists({ checkFalsy: true })
-    .withMessage("User already exists")
     .isEmail()
     .withMessage("Invalid email"),
   check("username").not().isEmail().withMessage("Username cannot be an email."),
@@ -33,7 +44,7 @@ const validateSignup = [
 
 const router = express.Router();
 
-router.post("/signup", validateSignup, async (req, res) => {
+router.post("/signup", validateSignup2, validateSignup, async (req, res) => {
   let { firstName, lastName, email, username, password } = req.body;
   const user = await User.signup({
     firstName,
@@ -42,14 +53,14 @@ router.post("/signup", validateSignup, async (req, res) => {
     username,
     password,
   });
-  const checkEmail = await User.findOne({ where: { email } });
+  // const checkEmail = await User.findOne({ where: { email } });
 
-  if (checkEmail) {
-    let error = new Error("User already exists");
-    error.status = 403;
-    error.errors = ["User with that email already exists"];
-    throw error;
-  }
+  // if (checkEmail) {
+  //   let error = new Error("User already exists");
+  //   error.status = 403;
+  //   error.errors = ["User with that email already exists"];
+  //   throw error;
+  // }
 
   const token = await setTokenCookie(res, user);
   const id = user.id;
