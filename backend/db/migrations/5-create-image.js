@@ -11,13 +11,17 @@ module.exports = {
       groupId: {
         references: {
           model: "Groups",
+          key: "id",
         },
+        onDelete: "CASCADE",
         type: Sequelize.INTEGER,
       },
       eventId: {
         references: {
           model: "Events",
+          key: "id",
         },
+        onDelete: "CASCADE",
         type: Sequelize.INTEGER,
       },
       url: {

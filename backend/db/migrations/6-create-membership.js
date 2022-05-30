@@ -23,7 +23,9 @@ module.exports = {
         allowNull: false,
         references: {
           model: "Groups",
+          key: "id",
         },
+        onDelete: "CASCADE",
         type: Sequelize.INTEGER,
       },
       createdAt: {

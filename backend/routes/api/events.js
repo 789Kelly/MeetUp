@@ -638,82 +638,59 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", validateQuery, async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
 
-  let where = {};
-  // let query = {
-  //   where: {},
-  //   include: [],
-  //   attributes: [],
-  //   group: [],
-  // };
+  if (page) {
+    page = parseInt(page);
+  }
+  if (size) {
+    size = parseInt(size);
+  }
 
-  if (name && name !== "") {
+  let where = {};
+  let pagination = {};
+
+  if (!page) {
+    page = 0;
+  }
+
+  if (!size) {
+    size = 20;
+  }
+
+  if (Number.isNaN(page) || page < 0 || page > 10) {
+    page = 0;
+  } else {
+    page = page;
+  }
+
+  if (Number.isNaN(size) || size < 0 || size > 20) {
+    size = 20;
+  } else {
+    size = size;
+  }
+
+  if (page > 0) {
+    pagination.limit = size;
+    pagination.offset = size * (page - 1);
+  } else {
+    pagination.limit = size;
+  }
+
+  if (name) {
     where.name = name;
+  }
+
+  if (startDate) {
+    where.startDate = startDate;
   }
 
   if (type === "Online" || type === "In Person") {
     where.type = type;
   }
 
-  if (startDate && startDate !== "") {
-    where.startDate = startDate;
-  }
-
-  page = parseInt(page);
-  size = parseInt(size);
-
-  if (Number.isNaN(page) || page < 0 || page > 10) page = 1;
-
-  if (Number.isNaN(size) || size < 0 || size > 20) size = 20;
-
-  let offset = size * (page - 1);
-  // query.limit = size;
-  // query.offset = size * (page - 1);
-  // query.include.push(
-  //   {
-  //     model: Attendance,
-  //     attributes: [],
-  //   },
-  //   {
-  //     model: Group,
-  //     as: "Group",
-  //     attributes: ["id", "name", "city", "state"],
-  //   },
-  //   {
-  //     model: Venue,
-  //     as: "Venue",
-  //     attributes: ["id", "city", "state"],
-  //   },
-  //   {
-  //     model: Image,
-  //     as: "images",
-  //     attributes: [],
-  //   }
-  // );
-
-  // query.attributes.push(
-  //   "id",
-  //   "groupId",
-  //   "venueId",
-  //   "name",
-  //   "type",
-  //   "startDate",
-  //   [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-  //   [sequelize.col("Images.url"), "previewImage"]
-  // );
-
-  // query.group.push("Event.id");
-
-  // const Events = await Event.findAll(query);
-
-  console.log(offset);
-
   const Events = await Event.findAll({
-    where,
-    // limit: size,
-    offset,
     include: [
       {
         model: Attendance,
@@ -756,6 +733,8 @@ router.get("/", async (req, res) => {
       "Venue.city",
       "Venue.state",
     ],
+    where: { ...where },
+    ...pagination,
   });
 
   return res.json({

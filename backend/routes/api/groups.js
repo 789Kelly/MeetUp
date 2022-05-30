@@ -12,7 +12,7 @@ const {
   Venue,
   sequelize,
 } = require("../../db/models");
-const { Op } = require("sequelize");
+const { Op, json } = require("sequelize");
 const { requireAuth } = require("../../utils/auth");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -93,6 +93,7 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
   });
 
   const memberMembership = await Membership.findOne({
+    attributes: ["id", "groupId", "userId", "status"],
     where: {
       userId: memberId,
       groupId: group.id,
@@ -145,21 +146,19 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
   }
 
   if (user.id === group.organizerId || membership.status === "co-host") {
-    let updatedMembership = await memberMembership.update({
+    memberMembership.update({
+      userId: memberId,
       status,
     });
 
-    let id = updatedMembership.id;
-    groupId = updatedMembership.groupId;
-    memberId = updatedMembership.userId;
-    status = updatedMembership.status;
+    delete memberMembership.dataValues.createdAt;
+    delete memberMembership.dataValues.updatedAt;
+    // let id = updatedMembership.id;
+    // groupId = updatedMembership.groupId;
+    // memberId = updatedMembership.userId;
+    // status = updatedMembership.status;
 
-    return res.json({
-      id,
-      groupId,
-      memberId,
-      status,
-    });
+    return res.json(memberMembership);
   } else {
     res.status(403);
     return res.json({
@@ -717,6 +716,7 @@ router.put("/:groupId", requireAuth, validateGroup, async (req, res) => {
 
 router.delete("/:groupId", requireAuth, async (req, res) => {
   const { groupId } = req.params;
+  const { user } = req;
 
   const group = await Group.findByPk(groupId);
 
@@ -728,12 +728,20 @@ router.delete("/:groupId", requireAuth, async (req, res) => {
     });
   }
 
-  await group.destroy();
+  if (user.id === group.organizerId) {
+    await group.destroy();
 
-  return res.json({
-    message: "Successfully deleted",
-    statusCode: 200,
-  });
+    return res.json({
+      message: "Successfully deleted",
+      statusCode: 200,
+    });
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 });
 
 router.get("/", async (req, res) => {

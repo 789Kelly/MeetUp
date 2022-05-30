@@ -12,11 +12,12 @@ module.exports = {
         allowNull: false,
         references: {
           model: "Groups",
+          key: "id",
         },
+        onDelete: "CASCADE",
         type: Sequelize.INTEGER,
       },
       venueId: {
-        allowNull: false,
         references: {
           model: "Venues",
         },
