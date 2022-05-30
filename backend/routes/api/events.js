@@ -46,12 +46,12 @@ const validateQuery = [
   check("size")
     .isInt({ min: 0 })
     .withMessage("Size must be greater than or equal to 0"),
-  check("name").isString().withMessage("Name must be a string"),
+  check("name").optional({ nullable: true }).isString().withMessage("Name must be a string"),
   check("type")
-    .isIn(["Online", "In person"])
+    .optional({ nullable: true }).isIn(["Online", "In person"])
     .withMessage("Type must be 'Online' or 'In Person'"),
   check("startDate")
-    .isDate()
+    .optional({ nullable: true }).isDate()
     .withMessage("Start date must be a valid datetime"),
   handleValidationErrors,
 ];
