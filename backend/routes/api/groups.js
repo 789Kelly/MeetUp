@@ -686,9 +686,15 @@ router.put("/:groupId", requireAuth, validateGroup, async (req, res) => {
       city,
       state,
     });
-  }
 
-  return res.json(group);
+    return res.json(group);
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 });
 
 router.delete("/:groupId", requireAuth, async (req, res) => {
