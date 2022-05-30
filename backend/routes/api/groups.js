@@ -71,20 +71,11 @@ const validateEvent = [
 ];
 
 router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
-  const { groupId } = req.params;
-  const { memberId, status } = req.body;
+  let { groupId } = req.params;
+  let { memberId, status } = req.body;
   const { user } = req;
 
-  const group = await Group.findByPk(groupId, {
-    include: [
-      {
-        model: User,
-        where: {
-          id: userId,
-        },
-      },
-    ],
-  });
+  const group = await Group.findByPk(groupId);
 
   if (!group) {
     res.status(404);
@@ -94,17 +85,21 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
     });
   }
 
-  // const member =
+  const membership = await Membership.findOne({
+    where: {
+      userId: user.id,
+      groupId: group.id,
+    },
+  });
+
+  const memberMembership = await Membership.findOne({
+    where: {
+      userId: memberId,
+      groupId: group.id,
+    },
+  });
 
   if (!membership) {
-    res.status(404);
-    return res.json({
-      message: "Membership between the user and the group does not exist",
-      statusCode: 404,
-    });
-  }
-
-  if (user.id !== group.organizerId && membership.status !== "co-host") {
     res.status(403);
     return res.json({
       message: "Forbidden",
@@ -132,6 +127,7 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
       statusCode: 400,
     });
   }
+
   if (status === "pending") {
     res.status(400);
     return res.json({
@@ -140,15 +136,37 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
     });
   }
 
-  if (user.id === group.organizerId) {
-    membership.update({
+  if (!memberMembership) {
+    res.status(404);
+    return res.json({
+      message: "Membership between the user and the group does not exist",
+      statusCode: 404,
+    });
+  }
+
+  if (user.id !== group.organizerId && membership.status !== "co-host") {
+    let updatedMembership = memberMembership.update({
+      status,
+    });
+
+    let id = updatedMembership.id;
+    groupId = updatedMembership.groupId;
+    memberId = updatedMembership.userId;
+    status = updatedMembership.status;
+
+    return res.json({
+      id,
       groupId,
       memberId,
       status,
     });
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
   }
-
-  return res.json(membership);
 });
 
 router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
