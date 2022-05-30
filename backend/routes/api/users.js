@@ -33,8 +33,47 @@ const validateSignup = [
 
 const router = express.Router();
 
+// router.post("/signup", validateSignup, async (req, res) => {
+//   let { firstName, lastName, email, username, password } = req.body;
+//   const user = await User.signup({
+//     firstName,
+//     lastName,
+//     email,
+//     username,
+//     password,
+//   });
+
+//   const token = await setTokenCookie(res, user);
+//   const id = user.id;
+//   firstName = user.firstName;
+//   lastName = user.lastName;
+//   email = user.email;
+
+//   return res.json({
+//     id,
+//     firstName,
+//     lastName,
+//     email,
+//     token,
+//   });
 router.post("/signup", validateSignup, async (req, res) => {
-  let { firstName, lastName, email, username, password } = req.body;
+  const { firstName, lastName, email, password, username } = req.body;
+  const checkEmail = await User.findOne({ where: { email } });
+  const checkUsername = await User.findOne({ where: { username } });
+
+  if (checkEmail) {
+    let error = new Error("User already exists");
+    error.status = 403;
+    error.errors = ["User with that email already exists"];
+    throw error;
+  }
+  if (checkUsername) {
+    let error = new Error("User already exists");
+    error.status = 403;
+    error.errors = ["User with the username already exists"];
+    throw error;
+  }
+
   const user = await User.signup({
     firstName,
     lastName,
@@ -44,18 +83,8 @@ router.post("/signup", validateSignup, async (req, res) => {
   });
 
   const token = await setTokenCookie(res, user);
-  const id = user.id;
-  firstName = user.firstName;
-  lastName = user.lastName;
-  email = user.email;
 
-  return res.json({
-    id,
-    firstName,
-    lastName,
-    email,
-    token,
-  });
+  return res.json({ ...user.toSafeObject(), token });
 });
 
 router.get("/users/current/groups", requireAuth, async (req, res) => {
