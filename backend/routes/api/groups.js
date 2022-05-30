@@ -70,9 +70,9 @@ const validateEvent = [
   handleValidationErrors,
 ];
 
-router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
-  let { groupId } = req.params;
-  let { memberId, status } = req.body;
+router.get("/:groupId/members/:memberId", requireAuth, async (req, res) => {
+  let { groupId, memberId } = req.params;
+  let { status } = req.body;
   const { user } = req;
 
   const group = await Group.findByPk(groupId);
