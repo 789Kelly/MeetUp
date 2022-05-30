@@ -27,22 +27,7 @@ router.put("/:venueId", requireAuth, validateVenue, async (req, res) => {
   let { address, city, state, lat, lng } = req.body;
   let { venueId } = req.params;
 
-  const venue = await Venue.findByPk(venueId, {
-    include: [
-      {
-        model: Group,
-        include: [
-          {
-            model: Membership,
-            as: "Memberships",
-            where: {
-              userId: user.id,
-            },
-          },
-        ],
-      },
-    ],
-  });
+  const venue = await Venue.findByPk(venueId);
 
   if (!venue) {
     res.status(404);
@@ -52,8 +37,26 @@ router.put("/:venueId", requireAuth, validateVenue, async (req, res) => {
     });
   }
 
-  const group = venue.Group;
-  const membership = venue.Group.Membership;
+  const group = await Group.findOne({
+    where: {
+      id: venue.groupId,
+    },
+  });
+
+  const membership = await Membership.findOne({
+    where: {
+      userId: user.id,
+      groupId: group.id,
+    },
+  });
+
+  if (!group || !membership) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 
   if (user.id === group.organizerId || membership.status === "co-host") {
     const updatedVenue = await venue.update({
