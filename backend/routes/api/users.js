@@ -11,7 +11,7 @@ const {
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
-const validateSignup2 = [
+const validateSignups = [
   check("email").custom((value) => {
     const checkEmail = await User.findOne({ where: { email: value } });
   if (checkEmail) {
@@ -44,7 +44,7 @@ const validateSignup = [
 
 const router = express.Router();
 
-router.post("/signup", validateSignup2, validateSignup, async (req, res) => {
+router.post("/signup", validateSignups, validateSignup, async (req, res) => {
   let { firstName, lastName, email, username, password } = req.body;
   const user = await User.signup({
     firstName,
