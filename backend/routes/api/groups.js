@@ -70,7 +70,7 @@ const validateEvent = [
   handleValidationErrors,
 ];
 
-router.get("/:groupId/members/:memberId", requireAuth, async (req, res) => {
+router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
   let { groupId, memberId } = req.params;
   let { status } = req.body;
   const { user } = req;
