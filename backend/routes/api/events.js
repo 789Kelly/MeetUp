@@ -474,7 +474,7 @@ router.get("/:eventId", async (req, res) => {
 
 router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
   const { user } = req;
-  const {
+  let {
     venueId,
     name,
     type,
@@ -488,35 +488,6 @@ router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
 
   const venue = await Venue.findByPk(venueId);
 
-  const event = await Event.findByPk(eventId, {
-    attributes: [
-      "id",
-      "groupId",
-      "venueId",
-      "name",
-      "type",
-      "capacity",
-      "price",
-      "description",
-      "startDate",
-      "endDate",
-    ],
-    include: [
-      {
-        model: Group,
-        as: "Group",
-        include: [
-          {
-            model: Membership,
-            where: {
-              userId: user.id,
-            },
-          },
-        ],
-      },
-    ],
-  });
-
   if (!venue) {
     res.status(404);
     return res.json({
@@ -524,6 +495,8 @@ router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
       statusCode: 404,
     });
   }
+
+  const event = await Event.findByPk(eventId);
 
   if (!event) {
     res.status(404);
@@ -533,11 +506,37 @@ router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
     });
   }
 
-  const group = event.Group;
-  const membership = group.Memberships[0];
+  const group = await Group.findOne({
+    where: {
+      id: event.groupId,
+    },
+  });
+
+  if (!group) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
+
+  const membership = await Membership.findOne({
+    where: {
+      userId: user.id,
+      groupId: group.id,
+    },
+  });
+
+  if (!membership) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 
   if (user.id === group.organizerId || membership.status === "co-host") {
-    await event.update({
+    const updatedEvent = await event.update({
       venueId,
       name,
       type,
@@ -547,9 +546,37 @@ router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
       startDate,
       endDate,
     });
-  }
 
-  return res.json(event);
+    let id = updatedEvent.id;
+    let groupId = updatedEvent.groupId;
+    venueId = updatedEvent.venueId;
+    name = updatedEvent.name;
+    type = updatedEvent.type;
+    capacity = updatedEvent.capacity;
+    price = updatedEvent.price;
+    description = updatedEvent.description;
+    startDate = updatedEvent.startDate;
+    endDate = updatedEvent.endDate;
+
+    return res.json({
+      id,
+      groupId,
+      venueId,
+      name,
+      type,
+      capacity,
+      price,
+      description,
+      startDate,
+      endDate,
+    });
+  } else {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
 });
 
 router.delete("/:eventId", requireAuth, async (req, res) => {
