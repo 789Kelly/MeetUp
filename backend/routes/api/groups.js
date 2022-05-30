@@ -144,7 +144,7 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
     });
   }
 
-  if (user.id === group.organizerId && membership.status === "co-host") {
+  if (user.id === group.organizerId || membership.status === "co-host") {
     let updatedMembership = memberMembership.update({
       status,
     });
