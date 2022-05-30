@@ -717,7 +717,7 @@ Change the status of a membership for a group specified by id.
 - Request
 
   - Method: PUT
-  - URL: /groups/:groupId/users/:userId
+  - URL: /groups/:groupId/members/:memberId
   - Headers:
     - Content-Type: application/json
   - Body:
