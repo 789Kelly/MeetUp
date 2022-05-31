@@ -43,6 +43,14 @@ router.put("/:venueId", requireAuth, validateVenue, async (req, res) => {
     },
   });
 
+  if (!group) {
+    res.status(403);
+    return res.json({
+      message: "Forbidden",
+      statusCode: 403,
+    });
+  }
+
   const membership = await Membership.findOne({
     where: {
       userId: user.id,
@@ -50,7 +58,7 @@ router.put("/:venueId", requireAuth, validateVenue, async (req, res) => {
     },
   });
 
-  if (!group || !membership) {
+  if (!membership) {
     res.status(403);
     return res.json({
       message: "Forbidden",
