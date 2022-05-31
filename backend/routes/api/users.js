@@ -54,18 +54,20 @@ router.post("/signup", validateSignup, async (req, res) => {
   });
 
   const token = await setTokenCookie(res, user);
-  const id = user.id;
-  firstName = user.firstName;
-  lastName = user.lastName;
-  email = user.email;
+  // const id = user.id;
+  // firstName = user.firstName;
+  // lastName = user.lastName;
+  // email = user.email;
 
-  return res.json({
-    id,
-    firstName,
-    lastName,
-    email,
-    token,
-  });
+  // return res.json({
+  //   id,
+  //   firstName,
+  //   lastName,
+  //   email,
+  //   token,
+  // });
+
+  return res.json({ ...user.toSafeObject(), token });
 });
 
 router.get("/users/current/groups", requireAuth, async (req, res) => {
