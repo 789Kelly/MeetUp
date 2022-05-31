@@ -18,9 +18,9 @@ const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
 const validateEvent = [
-  // check("venueId")
-  //   .exists({ checkFalsy: true })
-  //   .withMessage("Venue is required"),
+  check("venueId")
+    .exists({ checkFalsy: true })
+    .withMessage("Venue does not exist"),
   check("name")
     .isLength({ min: 5 })
     .withMessage("Name must be at least 5 characters"),
@@ -273,7 +273,8 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
       statusCode: 403,
     });
   }
-  let membership = await Membership.findOne({
+
+  const membership = await Membership.findOne({
     where: {
       userId: user.id,
       groupId: group.id,
