@@ -1311,7 +1311,7 @@ Creates and returns a new event for a group specified by its id
 
 ## Edit an Event specified by its id
 
-Edit and returns an event specified by its id
+Edit and return an event specified by its id
 
 - Require Authentication: true
 - Require Authorization: Current User must be the organizer of the group or a member of

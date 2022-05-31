@@ -46,12 +46,17 @@ const validateQuery = [
   check("size")
     .isInt({ min: 0 })
     .withMessage("Size must be greater than or equal to 0"),
-  check("name").optional({ nullable: true }).isString().withMessage("Name must be a string"),
+  check("name")
+    .optional({ nullable: true })
+    .isString()
+    .withMessage("Name must be a string"),
   check("type")
-    .optional({ nullable: true }).isIn(["Online", "In person"])
+    .optional({ nullable: true })
+    .isIn(["Online", "In person"])
     .withMessage("Type must be 'Online' or 'In Person'"),
   check("startDate")
-    .optional({ nullable: true }).isDate()
+    .optional({ nullable: true })
+    .isDate()
     .withMessage("Start date must be a valid datetime"),
   handleValidationErrors,
 ];
@@ -583,22 +588,7 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
   const { eventId } = req.params;
   const { user } = req;
 
-  const event = await Event.findByPk(eventId, {
-    include: [
-      {
-        model: Group,
-        as: "Group",
-        include: [
-          {
-            model: Membership,
-            where: {
-              userId: user.id,
-            },
-          },
-        ],
-      },
-    ],
-  });
+  const event = await Event.findByPk(eventId);
 
   if (!event) {
     res.status(404);
@@ -607,20 +597,23 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
       statusCode: 404,
     });
   }
-  // const group = await Group.findByPk(event.groupId);
 
-  const group = event.Group;
-  let membership;
+  const group = await Group.findByPk(event.groupId);
 
-  if (!group.Memberships) {
+  if (!group) {
     res.status(403);
     return res.json({
       message: "Forbidden",
       statusCode: 403,
     });
-  } else {
-    membership = group.Memberships;
   }
+
+  const membership = await Membership.findOne({
+    where: {
+      userId: user.id,
+      groupId: group.id,
+    },
+  });
 
   if (user.id === group.organizerId || membership.status === "co-host") {
     await event.destroy();
