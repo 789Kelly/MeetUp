@@ -700,6 +700,10 @@ router.get("/", validateQuery, async (req, res) => {
   //   where:
   // })
 
+  const { count } = await Attendance.countAll({
+    where: {},
+  });
+
   const Events = await Event.findAll({
     include: [
       {
@@ -722,16 +726,21 @@ router.get("/", validateQuery, async (req, res) => {
         attributes: [],
       },
     ],
-    attributes: [
-      "id",
-      "groupId",
-      "venueId",
-      "name",
-      "type",
-      "startDate",
-      // [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-      // [sequelize.col("images.url"), "previewImage"],
-    ],
+    attributes: {
+      include: [
+        "id",
+        "groupId",
+        "venueId",
+        "name",
+        "type",
+        "startDate",
+        [
+          sequelize.fn("COUNT", sequelize.col("Attendances.id")),
+          "numAttending",
+        ],
+        [sequelize.col("images.url"), "previewImage"],
+      ],
+    },
     group: [
       "Event.id",
       // "images.url",
