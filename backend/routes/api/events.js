@@ -647,7 +647,7 @@ router.get("/", async (req, res) => {
   let where = {};
 
   if (name && name !== "") {
-    where.name = { [Op.iLike]: `%${name}%` };
+    where.name = name;
   }
 
   const Events = await Event.findAll({
