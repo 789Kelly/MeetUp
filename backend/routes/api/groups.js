@@ -12,7 +12,7 @@ const {
   Venue,
   sequelize,
 } = require("../../db/models");
-const { Op, json } = require("sequelize");
+const { Op } = require("sequelize");
 const { requireAuth } = require("../../utils/auth");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -146,19 +146,19 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
   }
 
   if (user.id === group.organizerId || membership.status === "co-host") {
-    memberMembership.update({
+    const updatedMembership = await memberMembership.update({
       userId: memberId,
       status,
     });
 
-    delete memberMembership.dataValues.createdAt;
-    delete memberMembership.dataValues.updatedAt;
-    // let id = updatedMembership.id;
-    // groupId = updatedMembership.groupId;
-    // memberId = updatedMembership.userId;
-    // status = updatedMembership.status;
+    // delete memberMembership.dataValues.createdAt;
+    // delete memberMembership.dataValues.updatedAt;
+    let id = updatedMembership.id;
+    groupId = updatedMembership.groupId;
+    memberId = updatedMembership.userId;
+    status = updatedMembership.status;
 
-    return res.json(memberMembership);
+    return res.json(updatedMembership);
   } else {
     res.status(403);
     return res.json({
