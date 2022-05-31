@@ -58,7 +58,7 @@ const validateQuery = [
   //   .optional({ nullable: true })
   //   .isDate()
   //   .withMessage("Start date must be a valid datetime"),
-  // handleValidationErrors,
+  handleValidationErrors,
 ];
 
 router.delete(
@@ -686,7 +686,7 @@ router.get("/", validateQuery, async (req, res) => {
     where.type = type;
   }
 
-  const Events = await Event.findAll({
+  let Events = await Event.findAll({
     include: [
       {
         model: Attendance,
@@ -735,6 +735,14 @@ router.get("/", validateQuery, async (req, res) => {
     where: { ...where },
     ...pagination,
   });
+
+  // Events.forEach((event) => {
+  //   event.numAttending = sequelize.fn(
+  //     "COUNT",
+  //     sequelize.col("Attendances.id")
+  //   );
+  //   event.previewImage = sequelize.col("images.url");
+  // });
 
   return res.json({
     Events,

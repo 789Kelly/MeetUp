@@ -818,13 +818,6 @@ router.post("/", requireAuth, validateGroup, async (req, res) => {
     state,
   });
 
-  if (!newGroup) {
-    res.status(400);
-    return res.json({
-      message: "Validation Error",
-      statusCode: 400,
-    });
-  }
   res.status(201);
   return res.json(newGroup);
 });
