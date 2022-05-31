@@ -446,6 +446,16 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
 router.get("/:eventId", async (req, res) => {
   const { eventId } = req.params;
 
+  const eVent = await Event.findByPk(eventId);
+
+  if (!eVent) {
+    res.status(404);
+    return res.json({
+      message: "Event couldn't be found",
+      statusCode: 404,
+    });
+  }
+
   const event = await Event.findByPk(eventId, {
     include: [
       {
@@ -483,14 +493,6 @@ router.get("/:eventId", async (req, res) => {
     ],
     group: ["Event.id", "Group.id", "Venue.id", "images.id"],
   });
-
-  if (!event) {
-    res.status(404);
-    return res.json({
-      message: "Event couldn't be found",
-      statusCode: 404,
-    });
-  }
 
   res.json(event);
 });
