@@ -160,7 +160,7 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
     // memberId = updatedMembership.userId;
     // status = updatedMembership.status;
 
-    return res.json(updatedMembership);
+    return res.json(memberMembership);
   } else {
     res.status(403);
     return res.json({
