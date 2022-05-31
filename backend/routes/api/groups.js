@@ -157,6 +157,7 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
 
     delete memberMembership.dataValues.createdAt;
     delete memberMembership.dataValues.updatedAt;
+    delete memberMembership.dataValues.userId;
 
     return res.json(memberMembership);
   } else {

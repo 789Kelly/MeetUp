@@ -1630,7 +1630,7 @@ Change the status of an attendance for an event specified by id.
 - Request
 
   - Method: PUT
-  - URL: /events/:eventId/attendance
+  - URL: /events/:eventId/attendances/:attendeeId
   - Headers:
     - Content-Type: application/json
   - Body:
