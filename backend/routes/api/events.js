@@ -651,9 +651,7 @@ router.get("/", async (req, res) => {
   }
 
   const Events = await Event.findAll({
-    where: {
-      name,
-    },
+    where,
   });
 
   return res.json({
