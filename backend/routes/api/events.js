@@ -34,7 +34,7 @@ const validateEvent = [
     .withMessage("Description is required"),
   check("startDate").isAfter().withMessage("Start date must be in the future"),
   check("endDate")
-    .custom((value, { req }) => value < req.body.startDate)
+    .custom((value, { req }) => value > req.body.startDate)
     .withMessage("End date is less than start date"),
   handleValidationErrors,
 ];
