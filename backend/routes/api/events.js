@@ -728,12 +728,12 @@ router.get("/", validateQuery, async (req, res) => {
     ],
     attributes: {
       include: [
-        "id",
-        "groupId",
-        "venueId",
-        "name",
-        "type",
-        "startDate",
+        // "id",
+        // "groupId",
+        // "venueId",
+        // "name",
+        // "type",
+        // "startDate",
         [
           sequelize.fn("COUNT", sequelize.col("Attendances.id")),
           "numAttending",
