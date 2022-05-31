@@ -34,7 +34,9 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
 
   if (!group) {
     const event = await Event.findOne({
-      id: image.eventId,
+      where: {
+        id: image.eventId,
+      },
     });
 
     if (!event) {
