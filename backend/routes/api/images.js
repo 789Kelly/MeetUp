@@ -18,6 +18,7 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
     });
   }
 
+  // if (!image.groupId && )
   const group = await Group.findOne({
     where: {
       id: image.groupId,
