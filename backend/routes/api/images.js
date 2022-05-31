@@ -8,16 +8,7 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
   const { user } = req;
   const { imageId } = req.params;
 
-  const image = await Image.findByPk(imageId, {
-    include: [
-      {
-        model: Group,
-      },
-      {
-        model: Event,
-      },
-    ],
-  });
+  const image = await Image.findByPk(imageId);
 
   if (!image) {
     res.status(404);
@@ -27,17 +18,44 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
     });
   }
 
-  let group = image.Group;
-  let event = image.Event;
+  const group = await Group.findOne({
+    where: {
+      id: image.groupId,
+    },
+  });
 
-  if (!event) {
+  if (!group) {
+    const event = await Event.findbyPk(image.eventId);
+
+    if (!event) {
+      res.status(404);
+      return res.json({
+        message: "Neither group nor event could be found",
+        statusCode: 404,
+      });
+    }
+
+    const actualGroup = await Group.findbyPk(event.groupId);
+
+    if (!actualGroup) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
     const membership = await Membership.findOne({
       where: {
         userId: user.id,
-        groupId: group.id,
+        groupId: actualGroup.id,
       },
     });
-    if (user.id === group.organizerId || membership.status === "co-host") {
+
+    if (
+      user.id === actualGroup.organizerId ||
+      membership.status === "co-host"
+    ) {
       await image.destroy();
       res.status(200);
       return res.json({
@@ -51,22 +69,26 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
         statusCode: 403,
       });
     }
-  }
-
-  if (!group) {
-    group = await Group.findByPk(event.groupId, {
-      include: [
-        {
-          model: Membership,
-          where: {
-            userId: user.id,
-          },
-        },
-      ],
+  } else {
+    const actualMembership = await Membership.findOne({
+      where: {
+        groupId: group.id,
+        userId: user.id,
+      },
     });
 
-    const membership = group.Memberships[0];
-    if (user.id === group.organizerId || membership.status === "co-host") {
+    if (!actualMembership) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
+    if (
+      user.id === group.organizerId ||
+      actualMembership.status === "co-host"
+    ) {
       await image.destroy();
       res.status(200);
       return res.json({
