@@ -716,12 +716,6 @@ router.get("/", validateQuery, async (req, res) => {
     ],
     attributes: {
       include: [
-        "id",
-        "groupId",
-        "venueId",
-        "name",
-        "type",
-        "startDate",
         [
           sequelize.literal(`(
           SELECT COUNT(*)
@@ -741,6 +735,7 @@ router.get("/", validateQuery, async (req, res) => {
           "previewImage",
         ],
       ],
+      exclude: ["createdAt", "updatedAt"],
     },
     group: ["Event.id"],
     where: { ...where },
