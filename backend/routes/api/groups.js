@@ -185,6 +185,7 @@ router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
   const membership = await Membership.findOne({
     where: {
       userId: user.id,
+      groupId,
     },
   });
 
