@@ -1710,7 +1710,7 @@ Delete an attendance to an event specified by id.
 - Request
 
   - Method: DELETE
-  - URL: events/:eventId/attendances/:attendanceId
+  - URL: events/:eventId/attendances/:attendeeId
   - Headers:
     - Content-Type: application/json
   - Body: none

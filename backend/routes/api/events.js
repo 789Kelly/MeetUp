@@ -62,19 +62,13 @@ const validateQuery = [
 ];
 
 router.delete(
-  "/:eventId/attendances/:attendanceId",
+  "/:eventId/attendances/:attendeeId",
   requireAuth,
   async (req, res) => {
     const { user } = req;
-    const { eventId } = req.params;
+    const { eventId, attendeeId } = req.params;
 
-    const event = await Event.findByPk(eventId, {
-      include: [
-        {
-          model: Attendance,
-        },
-      ],
-    });
+    const event = await Event.findByPk(eventId);
 
     if (!event) {
       res.status(404);
@@ -84,9 +78,30 @@ router.delete(
       });
     }
 
-    let attendance = event.Attendances[0];
+    const attendance = await Attendance.findOne({
+      where: {
+        userId: attendeeId,
+        eventId,
+      },
+    });
+
+    if (!attendance) {
+      res.status(404);
+      return res.json({
+        message: "Attendance couldn't be found",
+        statusCode: 404,
+      });
+    }
 
     const group = await Group.findByPk(event.groupId);
+
+    if (!group) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
 
     const membership = await Membership.findOne({
       where: {
@@ -94,6 +109,14 @@ router.delete(
         groupId: group.id,
       },
     });
+
+    if (!membership) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
 
     if (
       user.id === group.organizerId ||
@@ -620,7 +643,6 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
 
     return res.json({
       message: "Successfully deleted",
-      statusCode: 200,
     });
   } else {
     res.status(403);
