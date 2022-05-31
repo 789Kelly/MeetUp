@@ -18,7 +18,14 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
     });
   }
 
-  // if (!image.groupId && )
+  if (!image.groupId && !image.eventId) {
+    res.status(404);
+    return res.json({
+      message: "Neither group nor event could be found",
+      statusCode: 404,
+    });
+  }
+
   const group = await Group.findOne({
     where: {
       id: image.groupId,
@@ -26,7 +33,9 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
   });
 
   if (!group) {
-    const event = await Event.findbyPk(image.eventId);
+    const event = await Event.findOne({
+      id: image.eventId,
+    });
 
     if (!event) {
       res.status(404);

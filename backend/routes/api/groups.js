@@ -64,7 +64,9 @@ const validateEvent = [
     .exists({ checkFalsy: true })
     .withMessage("Description is required"),
   check("startDate").isAfter().withMessage("Start date must be in the future"),
-  // check("endDate").custom((value, { req }) => {
+  check("endDate").custom((value) => {
+    console.log(value);
+  }),
   //   if (value < req.body.startDate) {
   //     throw new Error("End date is less than startDate");
   //   }
@@ -155,10 +157,6 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
 
     delete memberMembership.dataValues.createdAt;
     delete memberMembership.dataValues.updatedAt;
-    // let id = updatedMembership.id;
-    // groupId = updatedMembership.groupId;
-    // memberId = updatedMembership.userId;
-    // status = updatedMembership.status;
 
     return res.json(memberMembership);
   } else {

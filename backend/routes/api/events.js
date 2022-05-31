@@ -705,6 +705,10 @@ router.get("/", validateQuery, async (req, res) => {
     where.type = type;
   }
 
+  // const previewImage = await Image.findOne({
+  //   where:
+  // })
+
   const Events = await Event.findAll({
     include: [
       {
@@ -734,19 +738,19 @@ router.get("/", validateQuery, async (req, res) => {
       "name",
       "type",
       "startDate",
-      [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-      [sequelize.col("images.url"), "previewImage"],
+      // [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
+      // [sequelize.col("images.url"), "previewImage"],
     ],
     group: [
       "Event.id",
-      "images.url",
-      "Group.id",
-      "Group.name",
-      "Group.city",
-      "Group.state",
-      "Venue.id",
-      "Venue.city",
-      "Venue.state",
+      // "images.url",
+      // "Group.id",
+      // "Group.name",
+      // "Group.city",
+      // "Group.state",
+      // "Venue.id",
+      // "Venue.city",
+      // "Venue.state",
     ],
     where: { ...where },
     ...pagination,
