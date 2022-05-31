@@ -17,27 +17,27 @@ const { requireAuth } = require("../../utils/auth");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
-const validateEvent = [
-  // check("venueId")
-  //   .exists({ checkFalsy: true })
-  //   .withMessage("Venue is required"),
-  check("name")
-    .isLength({ min: 5 })
-    .withMessage("Name must be at least 5 characters"),
-  check("type")
-    .isIn(["Online", "In person"])
-    .withMessage("Type must be Online or In person"),
-  check("capacity").isInt().withMessage("Capacity must be an integer"),
-  check("price").isFloat({ min: 0.1 }).withMessage("Price is invalid"),
-  check("description")
-    .exists({ checkFalsy: true })
-    .withMessage("Description is required"),
-  check("startDate").isAfter().withMessage("Start date must be in the future"),
-  // check("endDate")
-  //   .isAfter("startDate")
-  //   .withMessage("End date is less than start date"),
-  handleValidationErrors,
-];
+// const validateEvent = [
+//   // check("venueId")
+//   //   .exists({ checkFalsy: true })
+//   //   .withMessage("Venue is required"),
+//   check("name")
+//     .isLength({ min: 5 })
+//     .withMessage("Name must be at least 5 characters"),
+//   check("type")
+//     .isIn(["Online", "In person"])
+//     .withMessage("Type must be Online or In person"),
+//   check("capacity").isInt().withMessage("Capacity must be an integer"),
+//   check("price").isFloat({ min: 0.1 }).withMessage("Price is invalid"),
+//   check("description")
+//     .exists({ checkFalsy: true })
+//     .withMessage("Description is required"),
+//   check("startDate").isAfter().withMessage("Start date must be in the future"),
+//   // check("endDate")
+//   //   .isAfter("startDate")
+//   //   .withMessage("End date is less than start date"),
+//   handleValidationErrors,
+// ];
 
 const validateQuery = [
   check("page")
