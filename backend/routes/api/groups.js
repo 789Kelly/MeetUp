@@ -95,11 +95,11 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
   });
 
   const memberMembership = await Membership.findOne({
-    attributes: ["id", "groupId", "userId", "status"],
     where: {
       userId: memberId,
       groupId: group.id,
     },
+    attributes: ["id", "groupId", ["userId", "memberId"], "status"],
   });
 
   if (!membership) {
@@ -148,17 +148,17 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
   }
 
   if (user.id === group.organizerId || membership.status === "co-host") {
-    const updatedMembership = await memberMembership.update({
+    memberMembership.update({
       userId: memberId,
       status,
     });
 
-    // delete memberMembership.dataValues.createdAt;
-    // delete memberMembership.dataValues.updatedAt;
-    let id = updatedMembership.id;
-    groupId = updatedMembership.groupId;
-    memberId = updatedMembership.userId;
-    status = updatedMembership.status;
+    delete memberMembership.dataValues.createdAt;
+    delete memberMembership.dataValues.updatedAt;
+    // let id = updatedMembership.id;
+    // groupId = updatedMembership.groupId;
+    // memberId = updatedMembership.userId;
+    // status = updatedMembership.status;
 
     return res.json(updatedMembership);
   } else {
