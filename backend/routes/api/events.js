@@ -641,106 +641,17 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/", validateQuery, async (req, res) => {
+router.get("/", async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
 
-  if (page) {
-    page = parseInt(page);
-  }
-  if (size) {
-    size = parseInt(size);
-  }
-
-  let where = {};
-  let pagination = {};
-
-  if (!page) {
-    page = 0;
-  }
-
-  if (!size) {
-    size = 20;
-  }
-
-  if (Number.isNaN(page) || page < 0 || page > 10) {
-    page = 0;
-  } else {
-    page = page;
-  }
-
-  if (Number.isNaN(size) || size < 0 || size > 20) {
-    size = 20;
-  } else {
-    size = size;
-  }
-
-  if (page > 0) {
-    pagination.limit = size;
-    pagination.offset = size * (page - 1);
-  } else {
-    pagination.limit = size;
-  }
-
-  if (name) {
+  if (name && name !== "") {
     where.name = { [Op.iLike]: `%${name}%` };
   }
 
-  if (startDate) {
-    where.startDate = startDate;
-  }
-
-  if (type === "Online" || type === "In Person") {
-    where.type = type;
-  }
-
   const Events = await Event.findAll({
-    include: [
-      {
-        model: Attendance,
-        attributes: [],
-      },
-      {
-        model: Group,
-        as: "Group",
-        attributes: ["id", "name", "city", "state"],
-      },
-      {
-        model: Venue,
-        as: "Venue",
-        attributes: ["id", "city", "state"],
-      },
-      {
-        model: Image,
-        as: "images",
-        attributes: [],
-      },
-    ],
-    attributes: {
-      include: [
-        [
-          sequelize.literal(`(
-          SELECT COUNT(*)
-          FROM attendances
-          WHERE
-            attendances.eventId = event.id
-        )`),
-          "numAttending",
-        ],
-        [
-          sequelize.literal(`(
-          SELECT url
-          FROM images
-          WHERE
-            images.eventId = event.id
-        )`),
-          "previewImage",
-        ],
-      ],
-      exclude: ["createdAt", "updatedAt"],
+    where: {
+      name: name,
     },
-    group: ["Event.id"],
-    where: { ...where },
-    ...pagination,
   });
 
   return res.json({
