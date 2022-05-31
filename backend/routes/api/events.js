@@ -54,11 +54,11 @@ const validateQuery = [
     .optional({ nullable: true })
     .isIn(["Online", "In person"])
     .withMessage("Type must be 'Online' or 'In Person'"),
-  check("startDate")
-    .optional({ nullable: true })
-    .isDate()
-    .withMessage("Start date must be a valid datetime"),
-  handleValidationErrors,
+  // check("startDate")
+  //   .optional({ nullable: true })
+  //   .isDate()
+  //   .withMessage("Start date must be a valid datetime"),
+  // handleValidationErrors,
 ];
 
 router.delete(
