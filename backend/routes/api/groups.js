@@ -169,11 +169,10 @@ router.put("/:groupId/members/:memberId", requireAuth, async (req, res) => {
 });
 
 router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
-  const { groupId, membershipId } = req.params;
+  const { groupId, memberId } = req.params;
   const { user } = req;
 
   const group = await Group.findByPk(groupId);
-  const membership = await Membership.findByPk(membershipId);
 
   if (!group) {
     res.status(404);
@@ -183,21 +182,51 @@ router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
     });
   }
 
+  const membership = await Membership.findOne({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (!membership) {
+    {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+  }
+
+  const memberMembership = await Membership.findOne({
+    where: {
+      userId: memberId,
+    },
+  });
+
+  if (!memberMembership) {
+    res.status(404);
+    return res.json({
+      message: "Member couldn't be found",
+      statusCode: 404,
+    });
+  }
+
   if (
-    user.id !== group.organizerId &&
-    membership.status !== "co-host" &&
-    membership.userId !== user.Id
+    user.id === group.organizerId ||
+    membership.status === "co-host" ||
+    membership.userId === user.Id
   ) {
+    await memberMembership.destroy();
+
+    return res.json({
+      message: "Successfully deleted membership from group",
+    });
+  } else {
     res.status(403);
     return res.json({
       message: "Forbidden",
       statusCode: 403,
-    });
-  } else {
-    await membership.destroy();
-
-    return res.json({
-      message: "Successfully deleted membership from group",
     });
   }
 });
