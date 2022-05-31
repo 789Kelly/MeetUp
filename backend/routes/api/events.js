@@ -644,13 +644,6 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
 router.get("/", validateQuery, async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
 
-  if (page) {
-    page = parseInt(page);
-  }
-  if (size) {
-    size = parseInt(size);
-  }
-
   let where = {};
   let pagination = {};
 
@@ -716,26 +709,26 @@ router.get("/", validateQuery, async (req, res) => {
       },
     ],
     attributes: {
-      include: [
-        [
-          sequelize.literal(`(
-          SELECT COUNT(*)
-          FROM attendances
-          WHERE
-            attendances.eventId = event.id
-        )`),
-          "numAttending",
-        ],
-        [
-          sequelize.literal(`(
-          SELECT url
-          FROM images
-          WHERE
-            images.eventId = event.id
-        )`),
-          "previewImage",
-        ],
-      ],
+      // include: [
+      //   [
+      //     sequelize.literal(`(
+      //     SELECT COUNT(*)
+      //     FROM attendances
+      //     WHERE
+      //       attendances.eventId = event.id
+      //   )`),
+      //     "numAttending",
+      //   ],
+      //   [
+      //     sequelize.literal(`(
+      //     SELECT url
+      //     FROM images
+      //     WHERE
+      //       images.eventId = event.id
+      //   )`),
+      //     "previewImage",
+      //   ],
+      // ],
       exclude: ["createdAt", "updatedAt"],
     },
     group: ["Event.id"],
