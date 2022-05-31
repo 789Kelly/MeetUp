@@ -49,9 +49,9 @@ const validateVenue = [
 ];
 
 const validateEvent = [
-  check("venueId")
-    .exists({ checkFalsy: true })
-    .withMessage("Venue is required"),
+  // check("venueId")
+  //   .exists({ checkFalsy: true })
+  //   .withMessage("Venue is required"),
   check("name")
     .isLength({ min: 5 })
     .withMessage("Name must be at least 5 characters"),
