@@ -386,21 +386,15 @@ router.get("/:eventId/attendees", requireAuth, async (req, res) => {
     });
   }
 
-  const group = await Group.findByPk(event.groupId, {
-    include: [
-      {
-        model: Membership,
-        where: {
-          userId: user.id,
-        },
-      },
-    ],
+  const group = await Group.findByPk(event.groupId);
+
+  const membership = await Membership.findOne({
+    where: {
+      groupId: group.id,
+      userId: user.id,
+    },
   });
 
-  // return res.json(group);
-
-  const membership = group.Memberships[0];
-  //not a member so it's null and cannot read
   let Attendees;
 
   if (group.organizerId === user.id || membership.status === "co-host") {
