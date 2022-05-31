@@ -264,16 +264,7 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
     });
   }
 
-  const group = await Group.findByPk(event.groupId, {
-    include: [
-      {
-        model: Membership,
-        where: {
-          userId: user.id,
-        },
-      },
-    ],
-  });
+  const group = await Group.findByPk(event.groupId);
 
   if (!group) {
     res.status(403);
@@ -282,7 +273,12 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
       statusCode: 403,
     });
   }
-  let membership = group.Memberships[0];
+  let membership = await Membership.findOne({
+    where: {
+      userId: user.id,
+      groupId: group.id,
+    },
+  });
 
   if (!membership) {
     res.status(403);
@@ -696,14 +692,6 @@ router.get("/", validateQuery, async (req, res) => {
     where.type = type;
   }
 
-  // const previewImage = await Image.findOne({
-  //   where:
-  // })
-
-  // const { count } = await Attendance.countAll({
-  //   where: {},
-  // });
-
   const Events = await Event.findAll({
     include: [
       {
@@ -728,30 +716,33 @@ router.get("/", validateQuery, async (req, res) => {
     ],
     attributes: {
       include: [
-        // "id",
-        // "groupId",
-        // "venueId",
-        // "name",
-        // "type",
-        // "startDate",
+        "id",
+        "groupId",
+        "venueId",
+        "name",
+        "type",
+        "startDate",
         [
-          sequelize.fn("COUNT", sequelize.col("Attendances.id")),
+          sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM attendances
+          WHERE
+            attendances.eventId = event.id
+        )`),
           "numAttending",
         ],
-        [sequelize.col("images.url"), "previewImage"],
+        [
+          sequelize.literal(`(
+          SELECT url
+          FROM images
+          WHERE
+            images.eventId = event.id
+        )`),
+          "previewImage",
+        ],
       ],
     },
-    group: [
-      "Event.id",
-      // "images.url",
-      // "Group.id",
-      // "Group.name",
-      // "Group.city",
-      // "Group.state",
-      // "Venue.id",
-      // "Venue.city",
-      // "Venue.state",
-    ],
+    group: ["Event.id"],
     where: { ...where },
     ...pagination,
   });
