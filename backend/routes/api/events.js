@@ -644,13 +644,15 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
 router.get("/", async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
 
+  let where = {};
+
   if (name && name !== "") {
     where.name = { [Op.iLike]: `%${name}%` };
   }
 
   const Events = await Event.findAll({
     where: {
-      name: name,
+      name,
     },
   });
 
