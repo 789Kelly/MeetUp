@@ -47,7 +47,11 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
       });
     }
 
-    const actualGroup = await Group.findbyPk(event.groupId);
+    const actualGroup = await Group.findOne({
+      where: {
+        id: event.groupId,
+      },
+    });
 
     if (!actualGroup) {
       res.status(403);
