@@ -274,7 +274,7 @@ router.post("/:eventId/attendances", requireAuth, async (req, res) => {
     });
   }
 
-  const membership = await Membership.findOne({
+  let membership = await Membership.findOne({
     where: {
       userId: user.id,
       groupId: group.id,
@@ -641,17 +641,106 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", validateQuery, async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
 
-  let where = {};
+  if (page) {
+    page = parseInt(page);
+  }
+  if (size) {
+    size = parseInt(size);
+  }
 
-  if (name && name !== "") {
+  let where = {};
+  let pagination = {};
+
+  if (!page) {
+    page = 0;
+  }
+
+  if (!size) {
+    size = 20;
+  }
+
+  if (Number.isNaN(page) || page < 0 || page > 10) {
+    page = 0;
+  } else {
+    page = page;
+  }
+
+  if (Number.isNaN(size) || size < 0 || size > 20) {
+    size = 20;
+  } else {
+    size = size;
+  }
+
+  if (page > 0) {
+    pagination.limit = size;
+    pagination.offset = size * (page - 1);
+  } else {
+    pagination.limit = size;
+  }
+
+  if (name) {
     where.name = name;
   }
 
+  if (startDate) {
+    where.startDate = startDate;
+  }
+
+  if (type === "Online" || type === "In Person") {
+    where.type = type;
+  }
+
   const Events = await Event.findAll({
-    where,
+    include: [
+      {
+        model: Attendance,
+        attributes: [],
+      },
+      {
+        model: Group,
+        as: "Group",
+        attributes: ["id", "name", "city", "state"],
+      },
+      {
+        model: Venue,
+        as: "Venue",
+        attributes: ["id", "city", "state"],
+      },
+      {
+        model: Image,
+        as: "images",
+        attributes: [],
+      },
+    ],
+    attributes: {
+      include: [
+        [
+          sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM attendances
+          WHERE
+            attendances.eventId = event.id
+        )`),
+          "numAttending",
+        ],
+        [
+          sequelize.literal(`(
+          SELECT url
+          FROM images
+          WHERE
+            images.eventId = event.id
+        )`),
+          "previewImage",
+        ],
+      ],
+      exclude: ["createdAt", "updatedAt"],
+    },
+    group: ["Event.id"],
+    where: { ...where },
+    ...pagination,
   });
 
   return res.json({
