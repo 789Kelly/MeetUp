@@ -681,7 +681,7 @@ router.get("/", validateQuery, async (req, res) => {
   }
 
   if (name) {
-    where.name = name;
+    where.name = { [Op.iLike]: `%${name}%` };
   }
 
   if (startDate) {
