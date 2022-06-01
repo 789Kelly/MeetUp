@@ -765,12 +765,12 @@ router.get("/", validateQuery, async (req, res) => {
   // Events.forEach(async (event) => {
   //   let num = await Attendance.count({
   //     where: {
-  //       id: event.id,
+  //       eventId: event.id,
   //     },
   //   });
   //   let image = await Image.findOne({
   //     where: {
-  //       id: event.id,
+  //       eventId: event.id,
   //     },
   //     attributes: ["url"],
   //   });
