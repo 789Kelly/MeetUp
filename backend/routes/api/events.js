@@ -729,6 +729,7 @@ router.get("/", validateQuery, async (req, res) => {
       //     "previewImage",
       //   ],
       // ],
+      // include: [[sequelize.col("images.url"), "preview"]],
       exclude: ["createdAt", "updatedAt"],
     },
     group: ["Event.id"],
@@ -736,12 +737,45 @@ router.get("/", validateQuery, async (req, res) => {
     ...pagination,
   });
 
-  // Events.forEach((event) => {
-  //   event.numAttending = sequelize.fn(
-  //     "COUNT",
-  //     sequelize.col("Attendances.id")
-  //   );
-  //   event.previewImage = sequelize.col("images.url");
+  // let events = await Event.findAll({
+  //   include: [
+  //     {
+  //       model: Attendance,
+  //       attributes: [],
+  //     },
+  //     {
+  //       model: Image,
+  //       as: "images",
+  //       attributes: [],
+  //     },
+  //   ],
+  //   attributes: {
+  //     include: [
+  //       [sequelize.col("images.url"), "preview"],
+  //       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "num"],
+  //     ],
+  //   },
+  // });
+
+  // Events.forEach((ele) => {
+  //   ele.numAttending = events.preview;
+  //   ele.previewImage = events.num;
+  // });
+
+  // Events.forEach(async (event) => {
+  //   let num = await Attendance.count({
+  //     where: {
+  //       id: event.id,
+  //     },
+  //   });
+  //   let image = await Image.findOne({
+  //     where: {
+  //       id: event.id,
+  //     },
+  //     attributes: ["url"],
+  //   });
+  //   event.numAttending = num;
+  //   event.previewImage = image.url;
   // });
 
   return res.json({
