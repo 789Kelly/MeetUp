@@ -52,8 +52,8 @@ const validateQuery = [
     .withMessage("Name must be a string"),
   check("type")
     .optional({ nullable: true })
-    .isIn(["Online", "In Person"])
-    .withMessage("Type must be 'Online' or 'In Person'"),
+    .isIn(["Online", "In person"])
+    .withMessage("Type must be 'Online' or 'In person'"),
   // check("startDate")
   //   .optional({ nullable: true })
   //   .isDate()
@@ -682,7 +682,7 @@ router.get("/", validateQuery, async (req, res) => {
     where.startDate = startDate;
   }
 
-  if (type === "Online" || type === "In Person") {
+  if (type === "Online" || type === "In person") {
     where.type = type;
   }
 
