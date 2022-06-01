@@ -675,7 +675,7 @@ router.get("/", validateQuery, async (req, res) => {
   }
 
   if (name) {
-    where.name = { [Op.iLike]: `%${name}%` };
+    where.name = name;
   }
 
   if (startDate) {
@@ -683,7 +683,7 @@ router.get("/", validateQuery, async (req, res) => {
   }
 
   if (type === "Online" || type === "In Person") {
-    where.type = { [Op.iLike]: `%${type}%` };
+    where.type = type;
   }
 
   let Events = await Event.findAll({
