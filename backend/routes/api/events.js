@@ -52,7 +52,7 @@ const validateQuery = [
     .withMessage("Name must be a string"),
   check("type")
     .optional({ nullable: true })
-    .isIn(["Online", "In person"])
+    .isIn(["Online", "In Person"])
     .withMessage("Type must be 'Online' or 'In Person'"),
   // check("startDate")
   //   .optional({ nullable: true })
