@@ -49,9 +49,12 @@ const validateVenue = [
 ];
 
 const validateEvent = [
-  check("venueId")
-    .exists({ checkFalsy: true })
-    .withMessage("Venue does not exist"),
+  check("venueId").custom(async (value, { req }) => {
+    const venue = await Venue.findByPk(value);
+    if (!venue) {
+      return Promise.reject("Venue does not exist");
+    }
+  }),
   check("name")
     .isLength({ min: 5 })
     .withMessage("Name must be at least 5 characters"),

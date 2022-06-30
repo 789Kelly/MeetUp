@@ -18,9 +18,12 @@ const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 
 const validateEvent = [
-  check("venueId")
-    .exists({ checkFalsy: true })
-    .withMessage("Venue does not exist"),
+  check("venueId").custom(async (value, { req }) => {
+    const venue = await Venue.findByPk(value);
+    if (!venue) {
+      return Promise.reject("Venue does not exist");
+    }
+  }),
   check("name")
     .isLength({ min: 5 })
     .withMessage("Name must be at least 5 characters"),
@@ -60,6 +63,23 @@ const validateQuery = [
   //   .withMessage("Start date must be a valid datetime"),
   handleValidationErrors,
 ];
+
+// const mapEvents = Events => {
+//   Events.forEach(event => {
+//     event.dataValues.previewImage = event.dataValues.images.map(image => {
+//       return image.url;
+//     });
+//     delete event.dataValues.images;
+//     let count = 0;
+//     event.dataValues.num = event.dataValues.Attendances.map(
+//    )forEach(attendance => {
+//        count += 1;
+//     }
+//)
+//   });
+//   return Events;
+// };
+// [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "num"],
 
 router.delete(
   "/:eventId/attendances/:attendeeId",
@@ -705,7 +725,7 @@ router.get("/", validateQuery, async (req, res) => {
       {
         model: Image,
         as: "images",
-        attributes: [],
+        attributes: ["url"],
       },
     ],
     attributes: {
@@ -777,9 +797,10 @@ router.get("/", validateQuery, async (req, res) => {
   //   event.numAttending = num;
   //   event.previewImage = image.url;
   // });
+  const eventAggregates = mapEvents(Events);
 
   return res.json({
-    Events,
+    Events: eventAggregates,
   });
 });
 
