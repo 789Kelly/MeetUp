@@ -64,22 +64,25 @@ const validateQuery = [
   handleValidationErrors,
 ];
 
-// const mapEvents = Events => {
-//   Events.forEach(event => {
-//     event.dataValues.previewImage = event.dataValues.images.map(image => {
-//       return image.url;
-//     });
-//     delete event.dataValues.images;
-//     let count = 0;
-//     event.dataValues.num = event.dataValues.Attendances.map(
-//    )forEach(attendance => {
-//        count += 1;
-//     }
-//)
-//   });
-//   return Events;
-// };
-// [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "num"],
+const mapEvents = Events => {
+  Events.forEach(event => {
+    event.dataValues.previewImage = event.dataValues.images.map(image => {
+      return image.url;
+    });
+    delete event.dataValues.images;
+    }
+)
+for await (const event of Events) {
+  const attendance = await Attendance.findAll({
+    where: {
+      eventId: event.id,
+    },
+  });
+  event.dataValues.numAttending = attendance.length;
+
+  };
+  return Events;
+};
 
 router.delete(
   "/:eventId/attendances/:attendeeId",
@@ -663,6 +666,17 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
 
 router.get("/", validateQuery, async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
+
+  // const allEvents = await Event.findAll();
+
+  // for await (const event of allEvents) {
+  //   const attendance = await Attendance.findAll({
+  //     where: {
+  //       eventId: event.id,
+  //     },
+  //   });
+  //   event.dataValues.numAttending = attendance.length;
+  // }
 
   let where = {};
   let pagination = {};
