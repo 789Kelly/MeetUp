@@ -718,7 +718,7 @@ router.get("/", validateQuery, async (req, res) => {
     where.type = type;
   }
 
-  let Events = await Event.findAll({
+  let events = await Event.findAll({
     include: [
       {
         model: Attendance,
@@ -809,7 +809,7 @@ router.get("/", validateQuery, async (req, res) => {
   //   event.numAttending = num;
   //   event.previewImage = image.url;
   // });
-  const eventAggregates = mapEvents(Events);
+  const eventAggregates = mapEvents(events);
 
   return res.json({
     Events: eventAggregates,
