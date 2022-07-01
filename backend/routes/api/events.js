@@ -809,8 +809,8 @@ router.get("/", validateQuery, async (req, res) => {
   //   event.numAttending = num;
   //   event.previewImage = image.url;
   // });
-  const eventAggregates = mapEvents(events);
-
+  const eventAggregates = await mapEvents(events);
+  console.log(eventAggregates);
   return res.json({
     Events: eventAggregates,
   });
