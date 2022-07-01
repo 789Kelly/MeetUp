@@ -64,23 +64,21 @@ const validateQuery = [
   handleValidationErrors,
 ];
 
-const mapEvents = Events => {
-  Events.forEach(event => {
-    event.dataValues.previewImage = event.dataValues.images.map(image => {
+const mapEvents = async (Events) => {
+  Events.forEach((event) => {
+    event.dataValues.previewImage = event.dataValues.images.map((image) => {
       return image.url;
     });
     delete event.dataValues.images;
-    }
-)
-for await (const event of Events) {
-  const attendance = await Attendance.findAll({
-    where: {
-      eventId: event.id,
-    },
   });
-  event.dataValues.numAttending = attendance.length;
-
-  };
+  for await (const event of Events) {
+    const attendance = await Attendance.findAll({
+      where: {
+        eventId: event.id,
+      },
+    });
+    event.dataValues.numAttending = attendance.length;
+  }
   return Events;
 };
 
