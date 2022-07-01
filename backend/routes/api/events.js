@@ -64,14 +64,14 @@ const validateQuery = [
   handleValidationErrors,
 ];
 
-const mapEvents = async (Events) => {
-  Events.forEach((event) => {
+const mapEvents = async (events) => {
+  events.forEach((event) => {
     event.dataValues.previewImage = event.dataValues.images.map((image) => {
       return image.url;
     });
     delete event.dataValues.images;
   });
-  for await (const event of Events) {
+  for await (const event of events) {
     const attendance = await Attendance.findAll({
       where: {
         eventId: event.id,
@@ -79,7 +79,7 @@ const mapEvents = async (Events) => {
     });
     event.dataValues.numAttending = attendance.length;
   }
-  return Events;
+  return events;
 };
 
 router.delete(
