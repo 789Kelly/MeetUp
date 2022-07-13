@@ -8,21 +8,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      groupId: {
-        references: {
-          model: "Groups",
-          key: "id",
-        },
-        onDelete: "CASCADE",
+      imageableId: {
         type: Sequelize.INTEGER,
       },
-      eventId: {
-        references: {
-          model: "Events",
-          key: "id",
-        },
-        onDelete: "CASCADE",
-        type: Sequelize.INTEGER,
+      imageableType: {
+        allowNull: false,
+        type: Sequelize.ENUM("group", "event"),
       },
       url: {
         allowNull: false,
