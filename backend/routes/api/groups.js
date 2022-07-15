@@ -700,6 +700,7 @@ router.get("/:groupId", async (req, res) => {
       "Group.id",
       "Images.id",
       "Organizer.id",
+      "Venues.id",
       //   "Organizer.Membership.status",
       //   "Organizer.Membership.userId",
       //   "Organizer.Membership.groupId",
