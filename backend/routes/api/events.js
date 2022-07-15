@@ -469,7 +469,7 @@ router.get("/:eventId", async (req, res) => {
     });
   }
 
-  const imager = event.id;
+  const imager = eVent.id;
 
   const event = await Event.findByPk(eventId, {
     include: [
