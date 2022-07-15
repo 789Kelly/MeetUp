@@ -648,6 +648,8 @@ router.get("/:groupId", async (req, res) => {
   const organizer = group.organizerId;
   const venuer = group.id;
 
+  console.log("here");
+
   const Groups = await Group.findByPk(groupId, {
     include: [
       {
@@ -658,7 +660,7 @@ router.get("/:groupId", async (req, res) => {
         model: Image,
         attributes: ["id", "imageableId", "url"],
         where: {
-          imaeableId: imager,
+          imageableId: imager,
           imageableType: "group",
         },
         through: {
