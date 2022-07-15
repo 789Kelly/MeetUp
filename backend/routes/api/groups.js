@@ -696,17 +696,17 @@ router.get("/:groupId", async (req, res) => {
       "updatedAt",
       [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
     ],
-    // group: [
-    //   "Group.id",
-    //   "Images.id",
-    //   "Images.url",
-    //   "Organizer.id",
-    //   "Organizer.Membership.status",
-    //   "Organizer.Membership.userId",
-    //   "Organizer.Membership.groupId",
-    //   "Organizer.Membership.createdAt",
-    //   "Organizer.Membership.updatedAt",
-    // ],
+    group: [
+      "Group.id",
+      //   "Images.id",
+      //   "Images.url",
+      //   "Organizer.id",
+      //   "Organizer.Membership.status",
+      //   "Organizer.Membership.userId",
+      //   "Organizer.Membership.groupId",
+      //   "Organizer.Membership.createdAt",
+      //   "Organizer.Membership.updatedAt",
+    ],
   });
 
   // let id = Groups.id;
