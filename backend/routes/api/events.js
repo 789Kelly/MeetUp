@@ -486,6 +486,7 @@ router.get("/:eventId", async (req, res) => {
       },
       {
         model: Image,
+        as: "images",
         attributes: ["id", "imageableId", "url"],
       },
     ],
@@ -502,7 +503,7 @@ router.get("/:eventId", async (req, res) => {
       "endDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
     ],
-    group: ["Event.id", "Group.id", "Venue.id"],
+    group: ["Event.id", "Group.id", "Venue.id", "images.id"],
   });
 
   res.json(event);
