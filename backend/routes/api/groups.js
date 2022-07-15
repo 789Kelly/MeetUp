@@ -663,9 +663,6 @@ router.get("/:groupId", async (req, res) => {
           imageableId: imager,
           imageableType: "group",
         },
-        through: {
-          attributes: [],
-        },
       },
       {
         model: User,
@@ -683,9 +680,6 @@ router.get("/:groupId", async (req, res) => {
         attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
         where: {
           groupId: venuer,
-        },
-        through: {
-          attributes: [],
         },
       },
     ],
