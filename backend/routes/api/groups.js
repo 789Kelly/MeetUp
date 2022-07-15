@@ -698,7 +698,7 @@ router.get("/:groupId", async (req, res) => {
     ],
     group: [
       "Group.id",
-      //   "Images.id",
+      "Images.id",
       //   "Images.url",
       //   "Organizer.id",
       //   "Organizer.Membership.status",
