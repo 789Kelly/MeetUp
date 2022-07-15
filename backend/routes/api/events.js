@@ -16,7 +16,6 @@ const { Op } = require("sequelize");
 const { requireAuth } = require("../../utils/auth");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
-const event = require("../../db/models/event");
 
 const validateEvent = [
   check("venueId").custom(async (value, { req }) => {
@@ -469,8 +468,6 @@ router.get("/:eventId", async (req, res) => {
     });
   }
 
-  const imager = eVent.id;
-
   const event = await Event.findByPk(eventId, {
     include: [
       {
@@ -490,10 +487,6 @@ router.get("/:eventId", async (req, res) => {
       {
         model: Image,
         attributes: ["id", "imageableId", "url"],
-        where: {
-          imageableId: imager,
-          imageableType: "event",
-        },
       },
     ],
     attributes: [
@@ -509,7 +502,7 @@ router.get("/:eventId", async (req, res) => {
       "endDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
     ],
-    group: ["Event.id", "Group.id", "Venue.id", "images.id"],
+    group: ["Event.id", "Group.id", "Venue.id", "Image.id"],
   });
 
   res.json(event);
