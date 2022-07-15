@@ -644,7 +644,9 @@ router.get("/:groupId", async (req, res) => {
     });
   }
 
+  const imager = group.id;
   const organizer = group.organizerId;
+  const venuer = group.id;
 
   const Groups = await Group.findByPk(groupId, {
     include: [
@@ -654,7 +656,14 @@ router.get("/:groupId", async (req, res) => {
       },
       {
         model: Image,
-        attributes: [],
+        attributes: ["id", "imageableId", "url"],
+        where: {
+          imaeableId: imager,
+          imageableType: "group",
+        },
+        through: {
+          attributes: [],
+        },
       },
       {
         model: User,
@@ -662,6 +671,16 @@ router.get("/:groupId", async (req, res) => {
         attributes: ["id", "firstName", "lastName"],
         where: {
           id: organizer,
+        },
+        through: {
+          attributes: [],
+        },
+      },
+      {
+        model: Venue,
+        attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
+        where: {
+          groupId: venuer,
         },
         through: {
           attributes: [],
@@ -680,7 +699,6 @@ router.get("/:groupId", async (req, res) => {
       "createdAt",
       "updatedAt",
       [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
-      [sequelize.col("Images.url"), "previewImage"],
     ],
     group: [
       "Group.id",
