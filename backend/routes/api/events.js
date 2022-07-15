@@ -502,7 +502,7 @@ router.get("/:eventId", async (req, res) => {
       "endDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
     ],
-    group: ["Event.id", "Group.id", "Venue.id"],
+    group: ["Event.id", "Group.id", "Venue.id", "Image.id"],
   });
 
   res.json(event);
