@@ -57,10 +57,10 @@ const validateQuery = [
     .optional({ nullable: true })
     .isIn(["Online", "In person"])
     .withMessage("Type must be 'Online' or 'In person'"),
-  // check("startDate")
-  //   .optional({ nullable: true })
-  //   .isDate()
-  //   .withMessage("Start date must be a valid datetime"),
+  check("startDate")
+    .optional({ nullable: true })
+    .isDate()
+    .withMessage("Start date must be a valid datetime"),
   handleValidationErrors,
 ];
 
@@ -525,14 +525,6 @@ router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
 
   const venue = await Venue.findByPk(venueId);
 
-  if (!venue) {
-    res.status(404);
-    return res.json({
-      message: "Venue couldn't be found",
-      statusCode: 404,
-    });
-  }
-
   const event = await Event.findByPk(eventId);
 
   if (!event) {
@@ -550,10 +542,10 @@ router.put("/:eventId", requireAuth, validateEvent, async (req, res) => {
   });
 
   if (!group) {
-    res.status(403);
+    res.status(404);
     return res.json({
-      message: "Forbidden",
-      statusCode: 403,
+      message: "Group couldn't be found",
+      statusCode: 404,
     });
   }
 

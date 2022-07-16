@@ -49,7 +49,7 @@ const validateVenue = [
 ];
 
 const validateEvent = [
-  check("venueId").custom(async (value, { req }) => {
+  check("venueId").custom(async (value) => {
     const venue = await Venue.findByPk(value);
     if (!venue) {
       return Promise.reject("Venue does not exist");
