@@ -235,7 +235,7 @@ router.delete("/:groupId/members/:memberId", requireAuth, async (req, res) => {
 router.post("/:groupId/images", requireAuth, async (req, res) => {
   const { user } = req;
   let { groupId } = req.params;
-  let { imageableId, url } = req.body;
+  let { url } = req.body;
 
   groupId = parseInt(groupId);
   const group = await Group.findByPk(groupId);
@@ -250,7 +250,7 @@ router.post("/:groupId/images", requireAuth, async (req, res) => {
 
   if (user.id === group.organizerId) {
     const newImage = await Image.create({
-      imageableId,
+      imageableId: groupId,
       imageableType: "group",
       url,
     });
