@@ -69,7 +69,7 @@ const mapEvents = async (events) => {
     event.dataValues.previewImage = event.dataValues.Image.map((image) => {
       return image.url;
     });
-    delete event.dataValues.images;
+    delete event.dataValues.Image;
   });
   for await (const event of events) {
     const attendance = await Attendance.findAll({
