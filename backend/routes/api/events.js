@@ -66,7 +66,7 @@ const validateQuery = [
 
 const mapEvents = async (events) => {
   events.forEach((event) => {
-    event.dataValues.previewImage = event.dataValues.Image.map((image) => {
+    event.dataValues.previewImage = event.dataValues.Images.map((image) => {
       return image.url;
     });
     delete event.dataValues.Image;
