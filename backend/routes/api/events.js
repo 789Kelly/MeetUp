@@ -728,7 +728,14 @@ router.get("/", validateQuery, async (req, res) => {
       },
     ],
     attributes: {
-      exclude: ["description", "createdAt", "updatedAt"],
+      exclude: [
+        "description",
+        "capacity",
+        "price",
+        "endDate",
+        "createdAt",
+        "updatedAt",
+      ],
     },
     group: ["Event.id"],
     where: { ...where },
