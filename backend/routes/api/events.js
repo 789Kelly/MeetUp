@@ -735,7 +735,6 @@ router.get("/", validateQuery, async (req, res) => {
       },
       {
         model: Image,
-        as: "images",
         attributes: ["url"],
       },
     ],
