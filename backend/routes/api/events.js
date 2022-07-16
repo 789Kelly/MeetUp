@@ -69,7 +69,7 @@ const mapEvents = async (events) => {
     event.dataValues.previewImage = event.dataValues.Images.map((image) => {
       return image.url;
     });
-    delete event.dataValues.Image;
+    delete event.dataValues.Images;
   });
   for await (const event of events) {
     const attendance = await Attendance.findAll({
@@ -664,17 +664,6 @@ router.delete("/:eventId", requireAuth, async (req, res) => {
 router.get("/", validateQuery, async (req, res) => {
   let { name, type, startDate, page, size } = req.query;
 
-  // const allEvents = await Event.findAll();
-
-  // for await (const event of allEvents) {
-  //   const attendance = await Attendance.findAll({
-  //     where: {
-  //       eventId: event.id,
-  //     },
-  //   });
-  //   event.dataValues.numAttending = attendance.length;
-  // }
-
   let where = {};
   let pagination = {};
 
@@ -739,74 +728,12 @@ router.get("/", validateQuery, async (req, res) => {
       },
     ],
     attributes: {
-      // include: [
-      //   [
-      //     sequelize.literal(`(
-      //     SELECT COUNT(*)
-      //     FROM attendances
-      //     WHERE
-      //       attendances.eventId = event.id
-      //   )`),
-      //     "numAttending",
-      //   ],
-      //   [
-      //     sequelize.literal(`(
-      //     SELECT url
-      //     FROM images
-      //     WHERE
-      //       images.eventId = event.id
-      //   )`),
-      //     "previewImage",
-      //   ],
-      // ],
-      // include: [[sequelize.col("images.url"), "preview"]],
       exclude: ["createdAt", "updatedAt"],
     },
     group: ["Event.id"],
     where: { ...where },
     ...pagination,
   });
-
-  // let events = await Event.findAll({
-  //   include: [
-  //     {
-  //       model: Attendance,
-  //       attributes: [],
-  //     },
-  //     {
-  //       model: Image,
-  //       as: "images",
-  //       attributes: [],
-  //     },
-  //   ],
-  //   attributes: {
-  //     include: [
-  //       [sequelize.col("images.url"), "preview"],
-  //       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "num"],
-  //     ],
-  //   },
-  // });
-
-  // Events.forEach((ele) => {
-  //   ele.numAttending = events.preview;
-  //   ele.previewImage = events.num;
-  // });
-
-  // Events.forEach(async (event) => {
-  //   let num = await Attendance.count({
-  //     where: {
-  //       eventId: event.id,
-  //     },
-  //   });
-  //   let image = await Image.findOne({
-  //     where: {
-  //       eventId: event.id,
-  //     },
-  //     attributes: ["url"],
-  //   });
-  //   event.numAttending = num;
-  //   event.previewImage = image.url;
-  // });
   const eventAggregates = await mapEvents(events);
   console.log(eventAggregates);
   return res.json({
