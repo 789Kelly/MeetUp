@@ -18,31 +18,64 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
     });
   }
 
-  if (!image.groupId && !image.eventId) {
-    res.status(404);
-    return res.json({
-      message: "Neither group nor event could be found",
-      statusCode: 404,
+  if (image.imageableType === "group") {
+    const group = await Group.findOne({
+      where: {
+        id: image.imageableId,
+      },
     });
-  }
 
-  const group = await Group.findOne({
-    where: {
-      id: image.groupId,
-    },
-  });
+    if (!group) {
+      res.status(404);
+      return res.json({
+        message: "Group could not be found",
+        statusCode: 404,
+      });
+    }
 
-  if (!group) {
+    const actualMembership = await Membership.findOne({
+      where: {
+        groupId: group.id,
+        userId: user.id,
+      },
+    });
+
+    if (!actualMembership) {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
+    if (
+      user.id === group.organizerId ||
+      actualMembership.status === "co-host"
+    ) {
+      await image.destroy();
+      res.status(200);
+      return res.json({
+        message: "Successfully deleted",
+        statusCode: 200,
+      });
+    } else {
+      res.status(403);
+      return res.json({
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+  } else {
     const event = await Event.findOne({
       where: {
-        id: image.eventId,
+        id: image.imageableId,
       },
     });
 
     if (!event) {
       res.status(404);
       return res.json({
-        message: "Neither group nor event could be found",
+        message: "Event could not be found",
         statusCode: 404,
       });
     }
@@ -71,39 +104,6 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
     if (
       user.id === actualGroup.organizerId ||
       membership.status === "co-host"
-    ) {
-      await image.destroy();
-      res.status(200);
-      return res.json({
-        message: "Successfully deleted",
-        statusCode: 200,
-      });
-    } else {
-      res.status(403);
-      return res.json({
-        message: "Forbidden",
-        statusCode: 403,
-      });
-    }
-  } else {
-    const actualMembership = await Membership.findOne({
-      where: {
-        groupId: group.id,
-        userId: user.id,
-      },
-    });
-
-    if (!actualMembership) {
-      res.status(403);
-      return res.json({
-        message: "Forbidden",
-        statusCode: 403,
-      });
-    }
-
-    if (
-      user.id === group.organizerId ||
-      actualMembership.status === "co-host"
     ) {
       await image.destroy();
       res.status(200);
