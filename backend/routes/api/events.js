@@ -728,7 +728,7 @@ router.get("/", validateQuery, async (req, res) => {
       },
     ],
     attributes: {
-      exclude: ["createdAt", "updatedAt"],
+      exclude: ["description", "createdAt", "updatedAt"],
     },
     group: ["Event.id"],
     where: { ...where },
