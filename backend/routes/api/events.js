@@ -368,17 +368,18 @@ router.post("/:eventId/images", requireAuth, async (req, res) => {
 
   if (attendance.status === "member" || attendance.status === "co-host") {
     const newImage = await Image.create({
-      eventId,
+      imageableId: eventId,
+      imageableType: "event",
       url,
     });
 
     let id = newImage.id;
-    eventId = newImage.eventId;
+    imageableId = newImage.imageableId;
     url = newImage.url;
 
     return res.json({
       id,
-      eventId,
+      imageableId,
       url,
     });
   } else {
