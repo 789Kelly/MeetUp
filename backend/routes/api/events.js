@@ -692,7 +692,8 @@ router.get("/", validateQuery, async (req, res) => {
   }
 
   if (startDate) {
-    where.startDate = startDate;
+    const date = new Date(startDate);
+    where.startDate = date;
   }
 
   if (type === "Online" || type === "In person") {
