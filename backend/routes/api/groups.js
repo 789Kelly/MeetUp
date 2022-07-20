@@ -644,10 +644,10 @@ router.get("/:groupId", async (req, res) => {
     });
   }
 
-  // const organizer = group.organizerId;
+  const organizer = group.organizerId;
 
-  // const Groups = await Group.findByPk(groupId, {
-  //   include: [
+  const Groups = await Group.findByPk(groupId, {
+    include: [
   //     {
   //       model: Membership,
   //       attributes: [],
@@ -656,13 +656,13 @@ router.get("/:groupId", async (req, res) => {
   //       model: Image,
   //       attributes: ["id", "imageableId", "url"],
   //     },
-  //     {
-  //       model: User,
-  //       as: "Organizer",
-  //       attributes: ["id", "firstName", "lastName"],
-  //       where: {
-  //         id: organizer,
-  //       },
+      {
+        model: User,
+        as: "Organizer",
+        attributes: ["id", "firstName", "lastName"],
+        where: {
+          id: organizer,
+        },
   //       through: {
   //         attributes: [],
   //       },
@@ -676,9 +676,9 @@ router.get("/:groupId", async (req, res) => {
   //     [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
   //   ],
   //   group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
-  // });
+  });
 
-  return res.json(group);
+  return res.json(Groups);
 });
 
 router.put("/:groupId", requireAuth, validateGroup, async (req, res) => {
