@@ -644,11 +644,7 @@ router.get("/:groupId", async (req, res) => {
     });
   }
 
-  const imager = group.id;
   const organizer = group.organizerId;
-  const venuer = group.id;
-
-  console.log("here");
 
   const Groups = await Group.findByPk(groupId, {
     include: [
@@ -659,10 +655,6 @@ router.get("/:groupId", async (req, res) => {
       {
         model: Image,
         attributes: ["id", "imageableId", "url"],
-        where: {
-          imageableId: imager,
-          imageableType: "group",
-        },
       },
       {
         model: User,
@@ -678,48 +670,13 @@ router.get("/:groupId", async (req, res) => {
       {
         model: Venue,
         attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
-        where: {
-          groupId: venuer,
-        },
       },
     ],
     attributes: [
-      "id",
-      "organizerId",
-      "name",
-      "about",
-      "type",
-      "private",
-      "city",
-      "state",
-      "createdAt",
-      "updatedAt",
       [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
     ],
-    group: [
-      "Group.id",
-      "Images.id",
-      "Organizer.id",
-      "Venues.id",
-      //   "Organizer.Membership.status",
-      //   "Organizer.Membership.userId",
-      //   "Organizer.Membership.groupId",
-      //   "Organizer.Membership.createdAt",
-      //   "Organizer.Membership.updatedAt",
-    ],
+    group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
   });
-
-  // let id = Groups.id;
-  // let organizerId = Groups.organizerId;
-  // let name = Groups.name;
-  // let about = Groups.about;
-  // let type = Groups.type;
-  // let private = Groups.private;
-  // let city = Groups.city;
-  // let state = Groups.state;
-  // let createdAt = Groups.createdAt;
-  // let updatedAt = Groups.updatedAt;
-  // numMembers = Groups.numMembers;
 
   return res.json(Groups);
 });
