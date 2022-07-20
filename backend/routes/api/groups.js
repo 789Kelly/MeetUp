@@ -650,33 +650,36 @@ router.get("/:groupId", async (req, res) => {
     include: [
       {
         model: Membership,
-        attributes: [],
+        // attributes: [],
       },
-      //   {
-      //     model: Image,
-      //     attributes: ["id", "imageableId", "url"],
-      //   },
-      //   {
-      //     model: User,
-      //     as: "Organizer",
-      //     attributes: ["id", "firstName", "lastName"],
-      //     where: {
-      //       id: organizer,
-      //     },
-      //     through: {
-      //       attributes: [],
-      //     },
-      //   },
-      //   {
-      //     model: Venue,
-      //     attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
-      //   },
+      {
+        model: Image,
+        attributes: ["id", "imageableId", "url"],
+      },
+      {
+        model: User,
+        as: "Organizer",
+        attributes: ["id", "firstName", "lastName"],
+        where: {
+          id: organizer,
+        },
+        through: {
+          attributes: [],
+        },
+      },
+      {
+        model: Venue,
+        attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
+      },
     ],
-    attributes: [
-      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
-    ],
+    // attributes: [
+    //   [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+    // ],
     // group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
   });
+
+  groups.dataValues.numMembers = groups.dataValues.Memberships.length;
+  delete groups.dataValues.Memberships;
 
   return res.json(groups);
 });
