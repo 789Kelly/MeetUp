@@ -646,7 +646,7 @@ router.get("/:groupId", async (req, res) => {
 
   const organizer = group.organizerId;
 
-  const Groups = await Group.findOne({
+  const groups = await Group.findOne({
     where: {
       id: groupId,
     },
@@ -675,13 +675,13 @@ router.get("/:groupId", async (req, res) => {
         attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
       },
     ],
-    attributes: [
-      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
-    ],
+    // attributes: [
+    //   [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+    // ],
     group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
   });
 
-  return res.json(Groups);
+  return res.json(groups);
 });
 
 router.put("/:groupId", requireAuth, validateGroup, async (req, res) => {
