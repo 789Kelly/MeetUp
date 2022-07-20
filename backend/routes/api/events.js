@@ -44,9 +44,11 @@ const validateEvent = [
 
 const validateQuery = [
   check("page")
+    .optional({ nullable: true })
     .isInt({ min: 0 })
     .withMessage("Page must be greater than or equal to 0"),
   check("size")
+    .optional({ nullable: true })
     .isInt({ min: 0 })
     .withMessage("Size must be greater than or equal to 0"),
   check("name")

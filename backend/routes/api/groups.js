@@ -412,7 +412,6 @@ router.get("/:groupId/events", async (req, res) => {
       },
       {
         model: Image,
-        as: "images",
         attributes: [],
       },
       {
