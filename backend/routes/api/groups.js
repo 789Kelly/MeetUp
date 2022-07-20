@@ -675,7 +675,7 @@ router.get("/:groupId", async (req, res) => {
     //   attributes: [
     //     [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
     //   ],
-    group: ["Group.id", "Organizer.id"],
+    // group: ["Group.id", "Organizer.id"],
   });
 
   return res.json(Groups);
