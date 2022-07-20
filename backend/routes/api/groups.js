@@ -646,38 +646,35 @@ router.get("/:groupId", async (req, res) => {
 
   const organizer = group.organizerId;
 
-  const groups = await Group.findOne({
-    where: {
-      id: groupId,
-    },
+  const groups = await Group.findByPk(groupId, {
     include: [
       {
         model: Membership,
         attributes: [],
       },
-      {
-        model: Image,
-        attributes: ["id", "imageableId", "url"],
-      },
-      {
-        model: User,
-        as: "Organizer",
-        attributes: ["id", "firstName", "lastName"],
-        where: {
-          id: organizer,
-        },
-        through: {
-          attributes: [],
-        },
-      },
-      {
-        model: Venue,
-        attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
-      },
+      //   {
+      //     model: Image,
+      //     attributes: ["id", "imageableId", "url"],
+      //   },
+      //   {
+      //     model: User,
+      //     as: "Organizer",
+      //     attributes: ["id", "firstName", "lastName"],
+      //     where: {
+      //       id: organizer,
+      //     },
+      //     through: {
+      //       attributes: [],
+      //     },
+      //   },
+      //   {
+      //     model: Venue,
+      //     attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
+      //   },
     ],
-    // attributes: [
-    //   [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
-    // ],
+    attributes: [
+      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+    ],
     group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
   });
 
