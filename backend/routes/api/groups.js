@@ -644,41 +644,41 @@ router.get("/:groupId", async (req, res) => {
     });
   }
 
-  const organizer = group.organizerId;
+  // const organizer = group.organizerId;
 
-  const Groups = await Group.findByPk(groupId, {
-    include: [
+  // const Groups = await Group.findByPk(groupId, {
+  //   include: [
+  //     //     {
+  //     //       model: Membership,
+  //     //       attributes: [],
+  //     //     },
+  //     //     {
+  //     //       model: Image,
+  //     //       attributes: ["id", "imageableId", "url"],
+  //     //     },
   //     {
-  //       model: Membership,
-  //       attributes: [],
-  //     },
-  //     {
-  //       model: Image,
-  //       attributes: ["id", "imageableId", "url"],
-  //     },
-      {
-        model: User,
-        as: "Organizer",
-        attributes: ["id", "firstName", "lastName"],
-        where: {
-          id: organizer,
-        },
+  //       model: User,
+  //       as: "Organizer",
+  //       attributes: ["id", "firstName", "lastName"],
+  //       where: {
+  //         id: organizer,
+  //       },
   //       through: {
   //         attributes: [],
   //       },
   //     },
-  //     {
-  //       model: Venue,
-  //       attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
-  //     },
+  //     //     {
+  //     //       model: Venue,
+  //     //       attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
+  //     //     },
   //   ],
-  //   attributes: [
-  //     [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
-  //   ],
-  //   group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
-  });
+  //   //   attributes: [
+  //   //     [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+  //   //   ],
+  //   //   group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
+  // });
 
-  return res.json(Groups);
+  return res.json(group);
 });
 
 router.put("/:groupId", requireAuth, validateGroup, async (req, res) => {
