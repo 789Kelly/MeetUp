@@ -106,15 +106,7 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
       [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
       [sequelize.col("Images.url"), "previewImage"],
     ],
-    group: [
-      "Group.id",
-      "Images.url",
-      "Organizer.Membership.status",
-      "Organizer.Membership.userId",
-      "Organizer.Membership.groupId",
-      "Organizer.Membership.createdAt",
-      "Organizer.Membership.updatedAt",
-    ],
+    group: ["Group.id", "Images.url"],
   });
 
   return res.json({
