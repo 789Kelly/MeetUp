@@ -685,6 +685,12 @@ router.get("/:groupId", async (req, res) => {
   // delete groups.dataValues.Memberships;
   // }
 
+  if (!groups) {
+    return res.json({
+      message: "Ugh",
+      statusCode: 404,
+    });
+  }
   const membership = await Membership.findAll({
     where: {
       groupId: groups.id,
