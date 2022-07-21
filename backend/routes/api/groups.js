@@ -661,9 +661,9 @@ router.get("/:groupId", async (req, res) => {
         model: User,
         as: "Organizer",
         attributes: ["id", "firstName", "lastName"],
-        where: {
-          id: organizer,
-        },
+        // where: {
+        //   id: organizer,
+        // },
         through: {
           attributes: [],
         },
