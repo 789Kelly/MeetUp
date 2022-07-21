@@ -678,12 +678,12 @@ router.get("/:groupId", async (req, res) => {
     // group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
   });
 
-  if (!groups.dataValues) {
-    groups.dataValues.numMembers = 0;
-  } else {
-    groups.dataValues.numMembers = groups.dataValues.Memberships.length;
-    delete groups.dataValues.Memberships;
-  }
+  // if (!groups.dataValues) {
+  //   groups.dataValues.numMembers = 0;
+  // } else {
+  groups.dataValues.numMembers = groups.dataValues.Memberships.length;
+  delete groups.dataValues.Memberships;
+  // }
 
   return res.json(groups);
 });
