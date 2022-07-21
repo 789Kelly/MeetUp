@@ -679,37 +679,15 @@ router.get("/:groupId", async (req, res) => {
     group: [
       "Group.id",
       "Memberships.status",
-      "Memberships.userId"
+      // "Memberships.userId",
       "Images.id",
       "Organizer.id",
       "Venues.id",
     ],
   });
 
-  // if (!groups.dataValues) {
-  //   groups.dataValues.numMembers = 0;
-  // } else {
   groups.dataValues.numMembers = groups.dataValues.Memberships.length;
   delete groups.dataValues.Memberships;
-  // }
-
-  // if (!groups) {
-  //   return res.json({
-  //     message: "Ugh",
-  //     statusCode: 404,
-  //   });
-  // }
-  // const membership = await Membership.findAll({
-  //   where: {
-  //     groupId,
-  //   },
-  // });
-
-  // if (!membership) {
-  //   groups.dataValues.numMembers = 0;
-  // } else {
-  //   groups.dataValues.numMembers = membership.length;
-  // }
 
   return res.json(groups);
 });
