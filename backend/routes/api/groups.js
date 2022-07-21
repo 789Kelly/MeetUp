@@ -673,9 +673,9 @@ router.get("/:groupId", async (req, res) => {
         attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
       },
     ],
-    attributes: [
-      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
-    ],
+    // attributes: [
+    //   [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+    // ],
     group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
   });
 
