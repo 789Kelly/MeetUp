@@ -648,10 +648,10 @@ router.get("/:groupId", async (req, res) => {
 
   const groups = await Group.findByPk(groupId, {
     include: [
-      // {
-      //   model: Membership,
-      //   attributes: [],
-      // },
+      {
+        model: Membership,
+        //   attributes: [],
+      },
       {
         model: Image,
         attributes: ["id", "imageableId", "url"],
