@@ -645,7 +645,7 @@ router.get("/:groupId", async (req, res) => {
     });
   }
 
-  const organizer = group.organizerId;
+  // const organizer = group.organizerId;
 
   const groups = await Group.findByPk(groupId, {
     include: [

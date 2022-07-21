@@ -79,9 +79,9 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
         model: User,
         as: "Organizer",
         attributes: [],
-        where: {
-          id: user.id,
-        },
+        // where: {
+        //   id: user.id,
+        // },
       },
       {
         model: Membership,
