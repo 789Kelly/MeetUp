@@ -650,7 +650,7 @@ router.get("/:groupId", async (req, res) => {
     include: [
       {
         model: Membership,
-        // attributes: [],
+        attributes: [],
       },
       {
         model: Image,
