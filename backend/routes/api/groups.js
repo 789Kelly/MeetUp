@@ -689,6 +689,8 @@ router.get("/:groupId", async (req, res) => {
     ],
   });
 
+  console.log(groups);
+
   groups.dataValues.numMembers = groups.dataValues.Memberships.length;
   delete groups.dataValues.Memberships;
 
