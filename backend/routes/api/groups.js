@@ -648,10 +648,10 @@ router.get("/:groupId", async (req, res) => {
 
   const groups = await Group.findByPk(groupId, {
     include: [
-      {
-        model: Membership,
-        //   attributes: [],
-      },
+      // {
+      //   model: Membership,
+      //   //   attributes: [],
+      // },
       {
         model: Image,
         attributes: ["id", "imageableId", "url"],
@@ -681,9 +681,21 @@ router.get("/:groupId", async (req, res) => {
   // if (!groups.dataValues) {
   //   groups.dataValues.numMembers = 0;
   // } else {
-  groups.dataValues.numMembers = groups.dataValues.Memberships.length;
-  delete groups.dataValues.Memberships;
+  // groups.dataValues.numMembers = groups.dataValues.Memberships.length;
+  // delete groups.dataValues.Memberships;
   // }
+
+  const membership = await Membership.findAll({
+    where: {
+      groupId: groups.id,
+    },
+  });
+
+  if (!membership) {
+    groups.dataValues.numMembers = 0;
+  } else {
+    groups.dataValues.numMembers = membership.length;
+  }
 
   return res.json(groups);
 });
