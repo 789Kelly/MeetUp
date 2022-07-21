@@ -633,6 +633,7 @@ router.post(
 
 router.get("/:groupId", async (req, res) => {
   let { groupId } = req.params;
+  groupId = parseInt(groupId);
 
   const group = await Group.findByPk(groupId);
 
@@ -648,10 +649,10 @@ router.get("/:groupId", async (req, res) => {
 
   const groups = await Group.findByPk(groupId, {
     include: [
-      // {
-      //   model: Membership,
-      //   //   attributes: [],
-      // },
+      {
+        model: Membership,
+        attributes: [],
+      },
       {
         model: Image,
         attributes: ["id", "imageableId", "url"],
@@ -672,10 +673,10 @@ router.get("/:groupId", async (req, res) => {
         attributes: ["id", "groupId", "address", "city", "state", "lat", "lng"],
       },
     ],
-    // attributes: [
-    //   [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
-    // ],
-    // group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
+    attributes: [
+      [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
+    ],
+    group: ["Group.id", "Images.id", "Organizer.id", "Venues.id"],
   });
 
   // if (!groups.dataValues) {
@@ -691,17 +692,17 @@ router.get("/:groupId", async (req, res) => {
   //     statusCode: 404,
   //   });
   // }
-  const membership = await Membership.findAll({
-    where: {
-      groupId,
-    },
-  });
+  // const membership = await Membership.findAll({
+  //   where: {
+  //     groupId,
+  //   },
+  // });
 
-  if (!membership) {
-    groups.dataValues.numMembers = 0;
-  } else {
-    groups.dataValues.numMembers = membership.length;
-  }
+  // if (!membership) {
+  //   groups.dataValues.numMembers = 0;
+  // } else {
+  //   groups.dataValues.numMembers = membership.length;
+  // }
 
   return res.json(groups);
 });
