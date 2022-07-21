@@ -651,7 +651,7 @@ router.get("/:groupId", async (req, res) => {
     include: [
       {
         model: Membership,
-        attributes: [],
+        // attributes: [],
       },
       {
         model: Image,
@@ -682,8 +682,8 @@ router.get("/:groupId", async (req, res) => {
   // if (!groups.dataValues) {
   //   groups.dataValues.numMembers = 0;
   // } else {
-  // groups.dataValues.numMembers = groups.dataValues.Memberships.length;
-  // delete groups.dataValues.Memberships;
+  groups.dataValues.numMembers = groups.dataValues.Memberships.length;
+  delete groups.dataValues.Memberships;
   // }
 
   // if (!groups) {
