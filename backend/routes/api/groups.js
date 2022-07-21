@@ -676,13 +676,13 @@ router.get("/:groupId", async (req, res) => {
     // attributes: [
     //   [sequelize.fn("COUNT", sequelize.col("Memberships.id")), "numMembers"],
     // ],
-    // group: [
-    //   "Group.id",
-    //   "Images.id",
-    //   "Organizer.id",
-    //   "Venues.id",
-    //   "Memberships.status",
-    // ],
+    group: [
+      "Group.id",
+      "Memberships.status",
+      "Images.id",
+      "Organizer.id",
+      "Venues.id",
+    ],
   });
 
   // if (!groups.dataValues) {
