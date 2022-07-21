@@ -679,6 +679,7 @@ router.get("/:groupId", async (req, res) => {
     group: [
       "Group.id",
       "Memberships.status",
+      "Memberships.userId"
       "Images.id",
       "Organizer.id",
       "Venues.id",
