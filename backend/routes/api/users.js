@@ -76,16 +76,11 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
   const Groups = await Group.findAll({
     include: [
       {
-        model: User,
-        as: "Organizer",
-        attributes: [],
-        // where: {
-        //   id: user.id,
-        // },
-      },
-      {
         model: Membership,
         attributes: [],
+        where: {
+          userId: user.id,
+        },
       },
       {
         model: Image,
