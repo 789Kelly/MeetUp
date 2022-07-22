@@ -739,7 +739,7 @@ router.get("/", validateQuery, async (req, res) => {
     ...pagination,
   });
   const eventAggregates = await mapEvents(events);
-  console.log(eventAggregates);
+
   return res.json({
     Events: eventAggregates,
   });

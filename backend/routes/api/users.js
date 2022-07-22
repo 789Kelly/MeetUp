@@ -33,6 +33,18 @@ const validateSignup = [
 
 const router = express.Router();
 
+const mapGroups = async (groups) => {
+  for await (const group of groups) {
+    const membership = await Membership.findAll({
+      where: {
+        groupId: group.id,
+      },
+    });
+    group.dataValues.numMembers = membership.length;
+  }
+  return groups;
+};
+
 router.post("/signup", validateSignup, async (req, res) => {
   let { firstName, lastName, email, username, password } = req.body;
 
@@ -104,8 +116,10 @@ router.get("/users/current/groups", requireAuth, async (req, res) => {
     group: ["Group.id", "Images.url"],
   });
 
+  const groupAggregates = await mapGroups(Groups);
+
   return res.json({
-    Groups,
+    Groups: groupAggregates,
   });
 });
 
