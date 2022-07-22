@@ -807,6 +807,12 @@ router.post("/", requireAuth, validateGroup, async (req, res) => {
     state,
   });
 
+  await Membership.create({
+    groupId: newGroup.id,
+    userId: user.id,
+    status: "member",
+  });
+
   res.status(201);
   return res.json(newGroup);
 });
