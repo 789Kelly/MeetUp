@@ -436,11 +436,11 @@ router.get("/:groupId/events", async (req, res) => {
       "type",
       "startDate",
       [sequelize.fn("COUNT", sequelize.col("Attendances.id")), "numAttending"],
-      [sequelize.col("images.url"), "previewImage"],
+      [sequelize.col("Images.url"), "previewImage"],
     ],
     group: [
       "Event.id",
-      "images.url",
+      "Images.url",
       "Group.id",
       "Group.name",
       "Group.city",
